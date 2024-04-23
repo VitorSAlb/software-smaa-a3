@@ -1,0 +1,15 @@
+name: CI-CD
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Passo 01
+        run: echo "Executando Testes"
+      - name: Passo 02
+        run: echo "Publicar imagem no  docker"
