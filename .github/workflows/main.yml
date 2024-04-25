@@ -19,8 +19,5 @@ jobs:
         with:
           node-version: 16
 
-      - name: Install dependencies
-        uses: npm install --prefix ../../frontend
-
       - name: Build project
         run: npm run build
