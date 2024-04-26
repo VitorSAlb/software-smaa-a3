@@ -18,7 +18,8 @@ jobs:
 
       - name: Validate commit messages
         run: |
-          git log --format=%s origin/..HEAD | grep -vE '^(feat|fix|chore|docs|style|refactor|test|perf)(\(.+\))?: .*' && exit 1 || exit 0
+          git log --format=%s origin..HEAD | grep -vE '^(feat|fix|chore|docs|style|refactor|test|perf)(\(.+\))?: .*' && exit 1 || exit 0
+
 
       - name: Setup Node
         uses: actions/setup-node@v1
