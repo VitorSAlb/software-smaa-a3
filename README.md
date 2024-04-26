@@ -1,3 +1,13 @@
+## Comandos
+
+git cz:
+> Faz os commits de acordo com o Conventional Commits
+
+npm run dev:
+> Na pasta frontend, você consiguira executar este codigo para abrir a versão de desenvolvedor do vite
+
+### Documentação do projeto
+
 ## Sistema de monitoramento de alunos atípicos - SMAA
 > Especificação de requisitos
 
