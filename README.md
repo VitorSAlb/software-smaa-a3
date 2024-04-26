@@ -12,12 +12,11 @@ npm run dev:
 > Especificação de requisitos
 
 Equipe: 
-Lucas Pedroza
-Vitor Albuquerque
-Lucas Lima
-Wadson
-Gustavo Santos
-Henrique Taruffe
+- Lucas Pedroza
+- Vitor Albuquerque
+- Lucas Lima
+- Wadson Daniel
+- Henrique Taruffe
 
 ## 1. Introdução
 
