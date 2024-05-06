@@ -16,8 +16,8 @@ const Header = (props) => {
             <nav>
                 <ul>
                     <Link to={'/'}><a href="#"><li>Home</li></a></Link>
-                    <Link to={'/'}><a href="#"><li>Home</li></a></Link>
-                    <Link to={'/'}><a href="#"><li>Home</li></a></Link>
+                    <Link to={'/teste'}><a href="#"><li>Alunos</li></a></Link>
+                    <Link to={'/teste'}><a href="#"><li>Relatório</li></a></Link>
                 </ul>
             </nav>
 

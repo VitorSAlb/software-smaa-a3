@@ -2,6 +2,7 @@ header {
     height: 60px;
     width: 100%;
 
+    background-color: #055902;
     background-image: url(./assets/header-bg.svg);
     background-size: 100%;
     background-repeat: no-repeat;
