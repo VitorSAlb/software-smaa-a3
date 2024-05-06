@@ -14,7 +14,7 @@ const Home = () => {
             <Header/>
 
             <main>
-                <Card titulo='Usuário' image={userIcon}/>
+                <Card titulo='Usuário' image={userIcon} />
                 <Card titulo='Lista de Alunos' image={listIcon}/>
                 <Card titulo='Relatório +' image={relaIcon}/>
             </main>

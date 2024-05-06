@@ -9,10 +9,10 @@ const Card = (props) => {
     return(
         <div className="card-container">
             <img className="pz4x4" src={puzzle4x4} />
-            <Link to={props.link ? props.link : '/teste'} className="card-info"><div>
-                <p>{props.titulo ? props.titulo : 'titulo'}</p>
-                <img src={props.image}/>
-            </div></Link>
+            <Link to={props.link ? props.link : '/teste'} className="card-info">
+                {/* <p>{props.titulo ? props.titulo : 'titulo'}</p> */}
+                <img src={props.image} alt={props.titulo}/>
+            </Link>
         </div>
     )
 }
