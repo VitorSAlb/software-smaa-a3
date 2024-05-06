@@ -3,6 +3,8 @@ name: CI-CD
 on:
   push:
     branches: ["master"]
+  pull_request:
+    branches: ["master"]
   workflow_dispatch:
 
 jobs:
@@ -14,12 +16,21 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
+      - name: Validate commit messages
+        run: |
+          git log --grep='^(feat|fix|chore|docs|style|refactor|test|perf)\(.*\):\s.*$'
+
+
+
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 21
 
       - name: Install dependencies
+        uses: bahmutov/npm-install@v1
+
+      - name: Install dependencies in frontend
         uses: bahmutov/npm-install@v1
         with:
           working-directory: frontend
