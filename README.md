@@ -1,13 +1,18 @@
 ## Comandos
 
+git commit
+> para realizar o commit utilizando o commitizen e o husky
+
+npm run dev:
+> Na pasta frontend, você consiguira executar este codigo para abrir a versão de desenvolvedor do vite
+
+## Comandos Antigos
+
 npm install commitizen -D -g
 > para instalar o comitizen na sua maquina global
 
 git cz:
 > Faz os commits de acordo com o Conventional Commits
-
-npm run dev:
-> Na pasta frontend, você consiguira executar este codigo para abrir a versão de desenvolvedor do vite
 
 ### Documentação do projeto
 
