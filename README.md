@@ -1,5 +1,8 @@
 ## Comandos
 
+npm install commitizen -D -g
+> para instalar o comitizen na sua maquina global
+
 git cz:
 > Faz os commits de acordo com o Conventional Commits
 
