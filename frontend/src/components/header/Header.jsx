@@ -22,7 +22,7 @@ const Header = (props) => {
             </nav>
 
             <div className="logout">
-                <button onClick={''}>Sair</button>
+                <button onClick={''} className="btn-logout">Sair</button>
             </div>
         </header>
     )
