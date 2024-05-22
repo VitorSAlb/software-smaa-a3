@@ -1,4 +1,4 @@
-import { openDB } from './configDB';
+import { openDB } from "./configDB.js"
 import express from 'express';
 
 const app = express();
