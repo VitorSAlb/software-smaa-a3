@@ -3,7 +3,8 @@
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "commitizen": "^4.3.0",
-    "cz-conventional-changelog": "^3.3.0"
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^8.0.0"
   },
   "config": {
     "commitizen": {
@@ -12,5 +13,8 @@
   },
   "dependencies": {
     "cz": "^1.8.2"
+  },
+  "scripts": {
+    "prepare": "husky install"
   }
 }
