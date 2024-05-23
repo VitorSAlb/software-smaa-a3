@@ -44,4 +44,3 @@ jobs:
 
       - name: Build project backend
         run: npm run test
-        working-directory: backend
