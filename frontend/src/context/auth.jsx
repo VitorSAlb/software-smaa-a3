@@ -9,16 +9,17 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const userToken = localStorage.getItem('user_token');
         if (userToken) {
-            setUser(JSON.parse(userToken));
+            setUser({ token: userToken }); // Definindo o token diretamente
         }
     }, []);
+    
 
     const signin = async (email, password) => {
         try {
             const response = await api.post('/login', { email, senha: password });
             const { data } = response;
     
-            localStorage.setItem('token', data.token); // Armazena o token no localStorage
+            localStorage.setItem('user_token', data.token); // Armazena o token no localStorage
             console.log('Token definido no localStorage:', data.token); // Mensagem de console para verificar se o token está sendo definido corretamente
             setUser({ email, token: data.token });
             return null;
@@ -29,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     
     
     const signout = async () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem('user_token');
         setUser(null);
         window.location.href = '/';
     };

@@ -11,11 +11,16 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleLogin = async () => {
+        if (!email || !password) {
+            setError('Por favor, preencha todos os campos.'); 
+            return;
+        }
+
         const errorMessage = await signin(email, password);
         if (errorMessage) {
             setError(errorMessage);
         } else {
-            navigate('/home'); // Ajuste o caminho do redirecionamento após o login
+            navigate('/home');
         }
     };
 
