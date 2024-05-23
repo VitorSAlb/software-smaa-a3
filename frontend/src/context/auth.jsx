@@ -9,9 +9,10 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const userToken = localStorage.getItem('user_token');
         if (userToken) {
-            setUser(JSON.parse(userToken));
+            setUser({ token: userToken }); // Definindo o token diretamente
         }
     }, []);
+    
 
     const signin = async (email, password) => {
         try {
