@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-async function createTables() {
+export async function createTables() {
     const db = await openDB();
     await db.exec(`
         CREATE TABLE IF NOT EXISTS usuarios (
@@ -53,7 +53,7 @@ async function createTables() {
     console.log("Tabelas criadas com sucesso!");
 }
 
-async function insertUsers() {
+export async function insertUsers() {
     const db = await openDB();
 
     // Verificar se já existem usuários na tabela
