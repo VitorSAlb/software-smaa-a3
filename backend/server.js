@@ -144,18 +144,18 @@ app.listen(PORT, async () => {
             res.status(500).json({ error: error.message });
         }
     });
-//testedddsads
+
     export const verifyToken = (req, res, next) => {
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) return res.status(401).json({ error: 'Token não fornecido.' });
-    
+
         jwt.verify(token, 'chave_secreta', (err, decodedToken) => {
-            if (err) return res.status(401).json({ error: 'Token inválido.' });
-    
+            if (err) return res.redirect('/'); // Redireciona para a tela de login
             req.user = decodedToken;
             next();
         });
     };
+
 
     // Função para adicionar um novo usuário
     app.post('/usuarios', async (req, res) => {

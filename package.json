@@ -20,5 +20,6 @@
   "scripts": {
     "prepare": "husky install",
     "test": "jest --passWithNoTests"
+    "baixar": "cd backend/ && npm i && cd ../frontend/ && npm i"
   }
 }

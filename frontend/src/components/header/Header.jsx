@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import './Header.css';
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../context/auth";
 
 const Header = (props) => {
+
+    const { signout } = useContext(AuthContext); // Obtenha a função de logout do contexto de autenticação
+
+    const handleLogout = () => {
+        signout(); // Chame a função de logout ao clicar no botão
+    };
 
     return(
         <header>
@@ -22,7 +29,7 @@ const Header = (props) => {
             </nav>
 
             <div className="logout">
-                <button onClick={''} className="btn-logout">Sair</button>
+                <button onClick={handleLogout} className="btn-logout">Sair</button>
             </div>
         </header>
     )
