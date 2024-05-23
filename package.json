@@ -15,6 +15,7 @@
     "cz": "^1.8.2"
   },
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "baixar": "cd backend/ && npm i && cd ../frontend/ && npm i"
   }
 }
