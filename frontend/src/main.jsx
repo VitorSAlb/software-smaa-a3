@@ -8,17 +8,18 @@ import Cadastro from './pages/Cadastro/Cadastro.jsx'
 
 import './index.css'
 
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { AuthProvider, AuthContext } from './context/auth.jsx';
 
 const Private = ({ Item }) => {
-  const signed = false;
-  return signed > 0 ? <Item /> : <Login />;
+  const { user } = React.useContext(AuthContext);
+  return user ? <Item /> : <Login />;
 }
 
 const router = createBrowserRouter([
   {
     path: "/home",
-    element: <Private Item={Home}/>,
+    element: <Private Item={Home} />,
   },
   {
     path: "/",
@@ -36,6 +37,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>,
 )
