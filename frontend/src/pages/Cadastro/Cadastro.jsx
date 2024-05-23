@@ -15,6 +15,7 @@ const Login = () => {
                     <div className="input-section">
                         <input placeholder="Insira o nome" />
                         <input type="number" placeholder="Insira a idade" />
+                        <input type="number" placeholder="Telefone" />
                         <input type="date" />
                         <input placeholder="Insira o email" />
                         {/* <input type="password" value='abc123' />*/}
@@ -35,7 +36,7 @@ const Login = () => {
 
                     <div className="button-section">
                         <button>Cadastrar</button>
-                        <Link to={'/Login'}><a>Ir para login</a></Link>
+                        <Link to={'/'}><a>Ir para login</a></Link>
                     </div>
                 </div>
             </div>
