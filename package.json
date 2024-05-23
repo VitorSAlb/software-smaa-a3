@@ -11,6 +11,9 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
+  "dependencies": {
+    "cz": "^1.8.2"
+  },
   "scripts": {
     "prepare": "husky install"
   }
