@@ -20,7 +20,7 @@ const Login = () => {
         if (errorMessage) {
             setError(errorMessage);
         } else {
-            navigate('/home');
+            navigate('/');
         }
     };
 
