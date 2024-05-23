@@ -1,8 +1,23 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import './Login.css';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/auth"; // Ajuste o caminho conforme necessário
 
 const Login = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const { signin } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleLogin = async () => {
+        const errorMessage = await signin(email, password);
+        if (errorMessage) {
+            setError(errorMessage);
+        } else {
+            navigate('/home'); // Ajuste o caminho do redirecionamento após o login
+        }
+    };
 
     return(
         <div className="login-bg">
@@ -13,14 +28,24 @@ const Login = () => {
 
                 <div className="form-container">
                     <div className="input-section">
-                        <input placeholder="Insira seu email" />
-                        <input placeholder="Insira sua senha" />
+                        <input 
+                            placeholder="Insira seu email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <input 
+                            type="password"
+                            placeholder="Insira sua senha"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
                     </div>
-        
+
+                    {error && <p className="error">{error}</p>}
 
                     <div className="button-section">
-                        <button>Entrar</button>
-                        <Link to={'/Cadastro'}><a>Ir para cadastro</a></Link>
+                        <button onClick={handleLogin}>Entrar</button>
+                        <Link to={'/cadastro'}>Ir para cadastro</Link>
                     </div>
                 </div>
             </div>

@@ -1,10 +1,14 @@
 import { openDB } from "./configDB.js"
 import express from 'express';
+import cors from 'cors';
+import jwt from 'jsonwebtoken';
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cors());
 
 async function createTables() {
     const db = await openDB();
@@ -133,11 +137,25 @@ app.listen(PORT, async () => {
                 return;
             }
     
-            res.status(200).json({ message: 'Login bem-sucedido!' });
+            // Geração do token JWT dentro do bloco de código onde 'usuario' está definida
+            const token = jwt.sign({ userId: usuario.id, userType: usuario.tipo_usuario }, 'chave_secreta', { expiresIn: '1h' });
+            res.status(200).json({ message: 'Login bem-sucedido!', token });
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
     });
+
+    export const verifyToken = (req, res, next) => {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ error: 'Token não fornecido.' });
+    
+        jwt.verify(token, 'chave_secreta', (err, decodedToken) => {
+            if (err) return res.status(401).json({ error: 'Token inválido.' });
+    
+            req.user = decodedToken;
+            next();
+        });
+    };
 
     // Função para adicionar um novo usuário
     app.post('/usuarios', async (req, res) => {
