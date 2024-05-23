@@ -11,7 +11,7 @@ const Home = () => {
 
     return(
         <>
-            <Header/>
+            <Header />
 
             <main>
                 <Card titulo='Usuário' image={userIcon} />

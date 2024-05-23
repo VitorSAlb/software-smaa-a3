@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import './Login.css';
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/auth"; // Ajuste o caminho conforme necessário
@@ -7,7 +7,7 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const { signin } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleLogin = async () => {
@@ -15,7 +15,7 @@ const Login = () => {
         if (errorMessage) {
             setError(errorMessage);
         } else {
-            navigate('/home'); // Ajuste o caminho do redirecionamento após o login
+            navigate('/home');
         }
     };
 
