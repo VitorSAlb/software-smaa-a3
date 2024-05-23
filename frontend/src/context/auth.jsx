@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
             const { data } = response;
     
             localStorage.setItem('token', data.token); // Armazena o token no localStorage
+            console.log('Token definido no localStorage:', data.token); // Mensagem de console para verificar se o token está sendo definido corretamente
             setUser({ email, token: data.token });
             return null;
         } catch (error) {
@@ -26,11 +27,13 @@ export const AuthProvider = ({ children }) => {
         }
     };
     
-    const signout = () => {
-        localStorage.removeItem('token'); // Remove o token do localStorage
+    
+    const signout = async () => {
+        localStorage.removeItem('token');
         setUser(null);
-        // Outras ações necessárias, como redirecionar para a página de login
+        window.location.href = '/';
     };
+    
     
 
     const signup = async (userData) => {
@@ -43,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, signin, signup }}>
+        <AuthContext.Provider value={{ user, signin, signup, signout }}>
             {children}
         </AuthContext.Provider>
     );
