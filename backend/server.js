@@ -106,12 +106,6 @@ export async function insertUsers() {
     }
 }
 
-app.listen(PORT, async () => {
-    await createTables();
-    await insertUsers();
-    console.log(`Servidor rodando na porta ${PORT}`);
-});
-
 // ------------------------------------------------- MÉTODOS POST -------------------------------------------------
 // função login para verificar email e senha de usuario
 app.post('/login', async (req, res) => {
@@ -152,6 +146,13 @@ export const verifyToken = (req, res, next) => {
         req.user = decodedToken;
         next();
     });
+};
+
+const verifyStudent = (req, res, next) => {
+    if (req.user.userType !== 'estudante') {
+        return res.status(403).json({ error: 'Acesso negado. Somente estudantes podem executar esta ação.' });
+    }
+    next();
 };
 
 // Função para adicionar um novo usuário
@@ -259,6 +260,40 @@ app.post('/estudantes', async (req, res) => {
 });
 
 // ------------------------------------------------- MÉTODOS GET -------------------------------------------------
+// função para retornar um usuario especifico por ID
+app.get('/usuarios/:id', async (req, res) => {
+    const db = await openDB();
+    try {
+        const usuario = await db.get(`
+            SELECT *
+            FROM usuarios
+            WHERE id = ?
+        `, [req.params.id]);
+        
+        if (usuario) {
+            res.json(usuario);
+        } else {
+            res.status(404).json({ error: "Usuário não encontrado" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// função para retornar todos os usuarios
+app.get('/usuarios', async (req, res) => {
+    const db = await openDB();
+    try {
+        const usuarios = await db.all(`
+            SELECT *
+            FROM usuarios
+        `);
+        res.json(usuarios);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Função para retornar um estudante específico
 app.get('/estudantes/:id', async (req, res) => {
     const db = await openDB();
@@ -341,4 +376,77 @@ app.get('/instituicoes', async (req, res) => {
         WHERE u.tipo_usuario = 'instituicao'
     `);
     res.json(instituicoes);
+});
+
+// ------------------------------------------------- MÉTODOS PUT -------------------------------------------------
+// Função para atualizar atributos gerais de um usuário
+app.put('/usuarios/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    const { nome, data_nascimento, telefone, foto, email, username, senha, status } = req.body;
+    const db = await openDB();
+
+    try {
+        const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [id]);
+
+        if (!usuario) {
+            res.status(404).json({ error: 'Usuário não encontrado.' });
+            return;
+        }
+
+        // Verifica se o usuário que está tentando editar é o mesmo que está logado
+        if (req.user.userId !== usuario.id) {
+            res.status(403).json({ error: 'Acesso negado. Você só pode editar seus próprios dados.' });
+            return;
+        }
+
+        await db.run(`
+            UPDATE usuarios
+            SET nome = ?, data_nascimento = ?, telefone = ?, foto = ?, email = ?, username = ?, senha = ?, status = ?
+            WHERE id = ?
+        `, [nome, data_nascimento, telefone, foto, email, username, senha, status, id]);
+
+        res.status(200).json({ message: 'Dados do usuário atualizados com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Função para atualizar atributos específicos de um estudante
+app.put('/estudantes/:id/especifico', verifyToken, verifyStudent, async (req, res) => {
+    const { id } = req.params;
+    const { turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude } = req.body;
+    const db = await openDB();
+
+    try {
+        const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [id]);
+
+        if (!estudante) {
+            res.status(404).json({ error: 'Estudante não encontrado.' });
+            return;
+        }
+
+        // Verifica se o estudante que está tentando editar é o mesmo que está logado
+        if (req.user.userId !== estudante.usuario_id) {
+            res.status(403).json({ error: 'Acesso negado. Você só pode editar seus próprios dados.' });
+            return;
+        }
+
+        await db.run(`
+            UPDATE estudantes
+            SET turma = ?, temperamento = ?, condicao_especial = ?, metodos_tecnicas = ?, alergias = ?, plano_saude = ?
+            WHERE usuario_id = ?
+        `, [turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude, id]);
+
+        res.status(200).json({ message: 'Dados específicos do estudante atualizados com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+//-------------------------------------------------------------------------------------------------------
+//Inicialização do servidor e criação das tabelas--------------------------------------------------------
+app.listen(PORT, async () => {
+    await createTables();
+    await insertUsers();
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
