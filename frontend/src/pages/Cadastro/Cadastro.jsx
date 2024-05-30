@@ -57,7 +57,7 @@ const Cadastro = () => {
     };
 
     return (
-        <div className="cadastro-bg">
+        <div className="cadastro-bg no-selection">
             <div className="cadastro-container">
                 <div className="cadastro-titulo">
                     <h1>Cadastro</h1>

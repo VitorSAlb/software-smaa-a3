@@ -147,16 +147,18 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// Middleware para verificar o token e definir o usuário no request
 export const verifyToken = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({ error: 'Token não fornecido.' });
 
     jwt.verify(token, 'chave_secreta', (err, decodedToken) => {
-        if (err) return res.redirect('/'); // Redireciona para a tela de login
+        if (err) return res.status(401).json({ error: 'Token inválido.' });
         req.user = decodedToken;
         next();
     });
 };
+
 
 const verifyStudent = (req, res, next) => {
     if (req.user.userType !== 'estudante') {
@@ -311,6 +313,27 @@ app.post('/relatorios', async (req, res) => {
 });
 
 // ------------------------------------------------- MÉTODOS GET -------------------------------------------------
+
+app.get('/me', verifyToken, async (req, res) => {
+    const db = await openDB();
+    try {
+        const usuario = await db.get(`
+            SELECT *
+            FROM usuarios
+            WHERE id = ?
+        `, [req.user.userId]);
+        
+        if (usuario) {
+            res.json(usuario);
+        } else {
+            res.status(404).json({ error: "Usuário não encontrado" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 // função para retornar um usuario especifico por ID
 app.get('/usuarios/:id', async (req, res) => {
     const db = await openDB();

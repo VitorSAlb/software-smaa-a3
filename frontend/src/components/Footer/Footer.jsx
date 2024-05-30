@@ -5,7 +5,7 @@ const Footer = () => {
 
     return(
         <footer>
-            <h1>@Copyright by VitorSAlb</h1>
+            <h1>@Copyright by Grupo 04 - UNIFACS</h1>
         </footer>
     )
 }

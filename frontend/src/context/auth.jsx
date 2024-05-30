@@ -9,18 +9,18 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const userToken = localStorage.getItem('user_token');
         if (userToken) {
+            api.defaults.headers.Authorization = `Bearer ${userToken}`;
             setUser({ token: userToken }); 
         }
     }, []);
-    
 
     const signin = async (email, password) => {
         try {
             const response = await api.post('/login', { email, senha: password });
             const { data } = response;
     
-            localStorage.setItem('user_token', data.token); // Armazena o token no localStorage
-            console.log('Token definido no localStorage:', data.token); // Mensagem de console para verificar se o token está sendo definido corretamente
+            localStorage.setItem('user_token', data.token);
+            api.defaults.headers.Authorization = `Bearer ${data.token}`;
             setUser({ email, token: data.token });
             return null;
         } catch (error) {
@@ -28,14 +28,11 @@ export const AuthProvider = ({ children }) => {
         }
     };
     
-    
     const signout = async () => {
         localStorage.removeItem('user_token');
         setUser(null);
         window.location.href = '/';
     };
-    
-    
 
     const signup = async (userData) => {
         try {
@@ -46,8 +43,18 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const getMe = async () => {
+        try {
+            const response = await api.get('/me');
+            setUser(response.data);
+            return response.data;
+        } catch (error) {
+            return error.response ? error.response.data.error : "Erro ao obter dados do usuário";
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, signin, signup, signout }}>
+        <AuthContext.Provider value={{ user, signin, signup, signout, getMe }}>
             {children}
         </AuthContext.Provider>
     );

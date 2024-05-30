@@ -11,6 +11,7 @@ import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/auth.jsx';
 import User from './pages/userPage/User.jsx';
+import UserProfile from './pages/userPage/User.jsx';
 
 const Private = ({ Item }) => {
   const { user } = React.useContext(AuthContext);
@@ -20,7 +21,7 @@ const Private = ({ Item }) => {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Private Item={Home} />,
+    element: <Private Item={UserProfile} />,
   },
   {
     path: "/login",
@@ -31,8 +32,8 @@ const router = createBrowserRouter([
     element: <Cadastro />,
   },
   {
-    path: "/user",
-    element: <User />,
+    path: "/home",
+    element: <Private Item={Home} />,
   },
   {
     path: "/teste",
