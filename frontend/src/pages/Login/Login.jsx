@@ -25,7 +25,7 @@ const Login = () => {
     };
 
     return(
-        <div className="login-bg">
+        <div className="login-bg no-selection">
             <div className="login-container">
                 <div className="login-titulo">
                     <h1>Login</h1>

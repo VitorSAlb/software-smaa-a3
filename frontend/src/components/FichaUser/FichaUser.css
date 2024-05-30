@@ -1,0 +1,76 @@
+.ficha-container{
+    border: 1px solid red;
+    width: 80%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 2rem 3.5rem;
+}
+
+.ficha-section {
+    border: 1px solid green;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.ficha-img {
+    background-color: lightgray;
+    width: 25%;
+    min-height: 350px;
+    max-height: 400px;
+}
+
+.ficha-info {
+    border: 1px solid blue;
+    padding: 10px;
+    width: 75%;
+}
+
+.ficha-nome-data{
+    border: 1px solid pink;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.idade-data {
+    border: 1px solid orange;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.idade-data hr {
+    width: 5%;
+}
+
+.ficha {
+    background-color: rgb(224, 246, 253);
+    width: 100%;
+    min-height: 200px;
+    height: fit-content;
+    margin: 10px 0;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: row;
+
+}
+
+.section-one {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.lista-rapida li {
+    margin-left: 20px;
+}

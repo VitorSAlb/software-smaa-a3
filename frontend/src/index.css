@@ -1,9 +1,13 @@
 :root {
-  width: 100vw; 
+  width: 100vw;
   height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  justify-content: center; /* Adicionado para centralizar verticalmente */
 }
 
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -11,10 +15,30 @@
   font-family: "Poppins", sans-serif;
 }
 
+body {
+  width: 100%;
+}
+
 main {
   height: 80vh;
 
   display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-selection {
+  -webkit-user-select: none;  /* Safari */
+  -moz-user-select: none;     /* Firefox */
+  -ms-user-select: none;      /* Internet Explorer/Edge */
+  user-select: none;          /* Standard */
+}
+
+.padrao {
+  width: 100%;
+  /* As propriedades abaixo centralizam o conteúdo da div .padrao */
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
