@@ -1,14 +1,30 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import './Header.css';
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/auth";
+import api from "../../api/api"; // Importe a configuração do axios
 
 const Header = (props) => {
+    const { user, signout } = useContext(AuthContext);
+    const [userName, setUserName] = useState(null);
 
-    const { signout } = useContext(AuthContext); // Obtenha a função de logout do contexto de autenticação
+    useEffect(() => {
+        const fetchUserDetails = async () => {
+            try {
+                const response = await api.get(`/user-details/${user.userId}`);
+                setUserName(response.data.nome);
+            } catch (error) {
+                console.error('Erro ao obter detalhes do usuário:', error);
+            }
+        };
+
+        if (user) {
+            fetchUserDetails();
+        }
+    }, [user]);
 
     const handleLogout = () => {
-        signout(); // Chame a função de logout ao clicar no botão
+        signout();
     };
 
     return(
@@ -17,7 +33,7 @@ const Header = (props) => {
                 <div className="user-img">
                     <img src={props.image}/>
                 </div>
-                <Link className="link-tag" to={'/'}><p>{props.nome ? props.nome : 'Nome do usuário'}</p></Link>
+                <Link className="link-tag" to={'/'}><p>{userName}</p></Link>
             </div>
             
             <nav>
