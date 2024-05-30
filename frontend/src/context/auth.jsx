@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import api from '../api/api'; // Importe a configuração do axios
+import api from '../api/api'; 
 
 export const AuthContext = createContext({});
 
@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const userToken = localStorage.getItem('user_token');
         if (userToken) {
-            setUser({ token: userToken }); // Definindo o token diretamente
+            setUser({ token: userToken }); 
         }
     }, []);
     
