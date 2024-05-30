@@ -2,6 +2,7 @@ import { openDB } from "./configDB.js"
 import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import { sendReports } from "./enviarRelatorio.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -186,10 +187,25 @@ app.post('/usuarios', async (req, res) => {
             return;
         }
 
+        // Inserir na tabela de usuários
         await db.run(`
             INSERT INTO usuarios (nome, data_nascimento, telefone, foto, email, username, senha, status, tipo_usuario)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [nome, data_nascimento, telefone, foto, email, username, senha, status, tipo_usuario]);
+
+        const usuarioId = await db.get(`SELECT last_insert_rowid() AS id`);
+
+        // Inserir nas tabelas específicas com dados vazios
+        if (tipo_usuario === 'instituicao') {
+            await db.run(`INSERT INTO instituicoes (usuario_id) VALUES (?)`, [usuarioId.id]);
+        } else if (tipo_usuario === 'mediador') {
+            await db.run(`INSERT INTO mediadores (usuario_id, instituicao_id) VALUES (?, ?)`, [usuarioId.id, null]); // Adicione null ou um valor padrão para instituicao_id
+        } else if (tipo_usuario === 'estudante') {
+            await db.run(`
+                INSERT INTO estudantes (usuario_id, instituicao_id, mediador_id, turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude)
+                VALUES (?, ?, ?, '', '', '', '', '', '')
+            `, [usuarioId.id, null, null]); // Adicione null ou valores padrão para instituicao_id e mediador_id
+        }
 
         res.status(201).json({ message: 'Usuário adicionado com sucesso!' });
     } catch (error) {
@@ -276,37 +292,27 @@ app.post('/relatorios', async (req, res) => {
     const db = await openDB();
 
     try {
-        // Verificar se o estudante existe
-        const estudante = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [estudante_id]);
-
+        const estudante = await db.get(`SELECT * FROM usuarios WHERE id = ? AND tipo_usuario = 'estudante'`, [estudante_id]);
         if (!estudante) {
-            res.status(400).json({ error: 'Estudante não encontrado.' });
-            return;
-        }
-        if (estudante.tipo_usuario !== 'estudante') {
-            res.status(400).json({ error: 'Usuário indicado não é do tipo estudante.' });
-            return;
+            return res.status(404).json({ error: 'Estudante não encontrado ou não é do tipo estudante.' });
         }
 
-        // Verificar se o mediador existe
-        const mediador = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [mediador_id]);
-
+        const mediador = await db.get(`SELECT * FROM usuarios WHERE id = ? AND tipo_usuario = 'mediador'`, [mediador_id]);
         if (!mediador) {
-            res.status(400).json({ error: 'Mediador não encontrado.' });
-            return;
-        }
-        if (mediador.tipo_usuario !== 'mediador') {
-            res.status(400).json({ error: 'Usuário indicado não é do tipo mediador.' });
-            return;
+            return res.status(404).json({ error: 'Mediador não encontrado ou não é do tipo mediador.' });
         }
 
-        // Adicionar o relatório
+        const existingReport = await db.get(`SELECT * FROM relatorios WHERE estudante_id = ?`, [estudante_id]);
+        if (existingReport) {
+            return res.status(400).json({ error: 'O estudante já possui um relatório.' });
+        }
+
         await db.run(`
-            INSERT INTO relatorios (anotacoes, estudante_id, mediador_id)
-            VALUES (?, ?, ?)
+            INSERT INTO relatorios (anotacoes, estudante_id, mediador_id, data_criacao)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP)
         `, [anotacoes, estudante_id, mediador_id]);
 
-        res.status(201).json({ message: 'Relatório adicionado com sucesso!' });
+        res.status(201).json({ message: 'Relatório criado com sucesso!' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -493,49 +499,32 @@ app.get('/relatorios', async (req, res) => {
 });
 
 app.get('/relatorios/estudante/:id', verifyToken, async (req, res) => {
-    const { id } = req.params;
-    const userId = req.user.id;
+    const { id } = req.params; // ID do estudante
     const db = await openDB();
 
     try {
-        const estudante = await db.get(`SELECT * FROM usuarios WHERE id = ? AND tipo_usuario = 'estudante'`, [id]);
+        // Obtenha os dados do estudante
+        const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [id]);
 
+        // Verifique se o estudante existe
         if (!estudante) {
-            res.status(400).json({ error: 'Estudante não encontrado ou não é do tipo estudante.' });
+            res.status(404).json({ error: "Estudante não encontrado." });
             return;
         }
 
-        // Verificar se o usuário autenticado é o próprio estudante ou um mediador autorizado
-        if (userId !== id) {
-            const mediador = await db.get(`
-                SELECT * FROM usuarios WHERE id = ? AND tipo_usuario = 'mediador'
-            `, [userId]);
-
-            if (!mediador) {
-                res.status(403).json({ error: 'Usuário não autorizado.' });
-                return;
-            }
-
-            // Verificar se o mediador está associado ao estudante
-            const associado = await db.get(`
-                SELECT * FROM relatorios WHERE estudante_id = ? AND mediador_id = ?
-            `, [id, userId]);
-
-            if (!associado) {
-                res.status(403).json({ error: 'Mediador não associado ao estudante.' });
-                return;
-            }
+        // Verifique se o usuário logado é o estudante ou o mediador associado
+        if (req.user.userType === 'estudante' && req.user.userId !== estudante.usuario_id) {
+            res.status(403).json({ error: 'Acesso negado. Você só pode acessar seus próprios relatórios.' });
+            return;
+        } else if (req.user.userType === 'mediador' && req.user.userId !== estudante.mediador_id) {
+            res.status(403).json({ error: 'Acesso negado. Você só pode acessar relatórios dos seus estudantes.' });
+            return;
         }
 
-        const relatorios = await db.all(`
-            SELECT r.*, u.nome AS estudante_nome, m.nome AS mediador_nome
-            FROM relatorios r
-            JOIN usuarios u ON r.estudante_id = u.id
-            JOIN usuarios m ON r.mediador_id = m.id
-            WHERE r.estudante_id = ?
-        `, [id]);
+        // Obtenha os relatórios do estudante
+        const relatorios = await db.all(`SELECT * FROM relatorios WHERE estudante_id = ?`, [id]);
 
-        res.status(200).json(relatorios);
+        res.json(relatorios);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
