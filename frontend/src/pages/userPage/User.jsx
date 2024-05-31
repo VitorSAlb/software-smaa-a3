@@ -10,6 +10,7 @@ const UserProfile = () => {
     const { user, getMe } = useContext(AuthContext);
     const [userData, setUserData] = useState(null);
 
+
     useEffect(() => {
         const fetchUserData = async () => {
             if (!userData && user) {
@@ -21,6 +22,9 @@ const UserProfile = () => {
         fetchUserData();
     }, [user, userData, getMe]);
 
+
+
+
     if (!userData) return <Loading />;
 
     return (
@@ -28,17 +32,18 @@ const UserProfile = () => {
             <Header />
 
             <div className='padrao'>
-            <FichaUser 
-                userData={userData}
-                condEsp={userData.estudanteInfo?.condicao_especial || 'Não identificado'}
-                temperamento={userData.estudanteInfo?.temperamento || 'Não identificado'}
-                alergias={userData.estudanteInfo?.alergias || 'Não identificado'}
-                hiperfocos={userData.estudanteInfo?.hiperfocos || 'Não identificado'}
-                planoSaude={userData.estudanteInfo?.plano_saude || 'Não identificado'}
-            />
+                <FichaUser 
+                    userData={userData}
+                    condEsp={userData.estudanteInfo?.condicao_especial || 'Não identificado'}
+                    temperamento={userData.estudanteInfo?.temperamento || 'Não identificado'}
+                    alergias={userData.estudanteInfo?.alergias || 'Não identificado'}
+                    hiperfocos={userData.estudanteInfo?.hiperfocos || 'Não identificado'}
+                    planoSaude={userData.estudanteInfo?.plano_saude || 'Não identificado'}
+                    onEditName={() => openEditModal('Nome')} // Adicione um prop para abrir o modal de edição do nome
+                />
 
-            <Relatorio userId={userData.id} />
-            
+                <Relatorio userId={userData.id} />
+                
             </div>
             
             <Footer />

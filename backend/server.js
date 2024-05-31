@@ -643,6 +643,64 @@ app.put('/estudantes/:id/especifico', verifyToken, verifyStudent, async (req, re
     }
 });
 
+app.put('/mediadores/:id/especifico', verifyToken, verifyMediator, async (req, res) => {
+    const { id } = req.params;
+    const { instituicao_id } = req.body;
+    const db = await openDB();
+
+    try {
+        const mediador = await db.get(`SELECT * FROM mediadores WHERE usuario_id = ?`, [id]);
+
+        if (!mediador) {
+            res.status(404).json({ error: 'Mediador não encontrado.' });
+            return;
+        }
+
+        // Verifica se o mediador que está tentando editar é o mesmo que está logado
+        if (req.user.userId !== mediador.usuario_id) {
+            res.status(403).json({ error: 'Acesso negado. Você só pode editar seus próprios dados.' });
+            return;
+        }
+
+        await db.run(`
+            UPDATE mediadores
+            SET instituicao_id = ?
+            WHERE usuario_id = ?
+        `, [instituicao_id, id]);
+
+        res.status(200).json({ message: 'Dados específicos do mediador atualizados com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Função para atualizar atributos específicos de uma instituição
+app.put('/instituicoes/:id/especifico', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    const db = await openDB();
+
+    try {
+        const instituicao = await db.get(`SELECT * FROM instituicoes WHERE usuario_id = ?`, [id]);
+
+        if (!instituicao) {
+            res.status(404).json({ error: 'Instituição não encontrada.' });
+            return;
+        }
+
+        // Verifica se a instituição que está tentando editar é a mesma que está logada
+        if (req.user.userId !== instituicao.usuario_id) {
+            res.status(403).json({ error: 'Acesso negado. Você só pode editar seus próprios dados.' });
+            return;
+        }
+
+        // Não há dados específicos da instituição para atualizar neste exemplo, mas você pode adicionar campos conforme necessário
+
+        res.status(200).json({ message: 'Dados específicos da instituição atualizados com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 //-------------------------------------------------------------------------------------------------------
 //Inicialização do servidor e criação das tabelas--------------------------------------------------------
 app.listen(PORT, async () => {
