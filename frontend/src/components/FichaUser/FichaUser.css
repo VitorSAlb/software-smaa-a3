@@ -1,5 +1,5 @@
 .ficha-container{
-    border: 1px solid red;
+    /* border: 1px solid red; */
     width: 80%;
 
     display: flex;
@@ -10,7 +10,7 @@
 }
 
 .ficha-section {
-    border: 1px solid green;
+    /* border: 1px solid green; */
     padding: 10px;
 
     display: flex;
@@ -26,20 +26,20 @@
 }
 
 .ficha-info {
-    border: 1px solid blue;
+    /* border: 1px solid blue; */
     padding: 10px;
     width: 75%;
 }
 
 .ficha-nome-data{
-    border: 1px solid pink;
+    /* border: 1px solid pink; */
 
     display: flex;
     flex-direction: column;
 }
 
 .idade-data {
-    border: 1px solid orange;
+    /* border: 1px solid orange; */
 
     display: flex;
     flex-direction: row;
@@ -65,12 +65,18 @@
 }
 
 .section-one {
-    border: 1px solid black;
+    /* border: 1px solid black; */
     display: flex;
     flex-direction: column;
     padding: 10px;
+    width: 100%;
 }
 
 .lista-rapida li {
     margin-left: 20px;
+}
+
+.list h3{
+    font-weight: 300;
+    font-size: 1rem;
 }

@@ -39,3 +39,8 @@
     padding: 10px;
     cursor: pointer;
 }
+
+.card-rel:hover{
+    background-color: black;
+    color: white;
+}
