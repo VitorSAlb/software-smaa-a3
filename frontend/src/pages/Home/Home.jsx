@@ -19,7 +19,7 @@ const Home = () => {
 
             <main>
                 <Card titulo='Usuário' image={userIcon} link={'/'} />
-                {user && (user.perfil === 'mediador' || user.perfil === 'instituição') && (
+                {user && (user.tipo_usuario === 'mediador' || user.tipo_usuario === 'instituição') && (
                     <>
                         <Card titulo='Lista de Alunos' image={listIcon} link={'/lista-de-alunos'} />
                         <Card titulo='Relatório +' image={relaIcon} link={'/relatorio'} />
