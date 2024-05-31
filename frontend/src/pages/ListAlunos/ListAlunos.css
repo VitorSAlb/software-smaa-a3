@@ -1,0 +1,45 @@
+/* src/components/StudentList/StudentList.css */
+.student-list-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.student-list-header,
+.student-list-footer {
+    flex-shrink: 0;
+}
+
+.student-list-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.student-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: transform 0.2s ease;
+
+    color: black;
+    text-decoration: none;
+}
+
+.student-card:hover {
+    transform: translateY(-4px);
+}
+
+.student-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.student-list li {
+    margin-bottom: 16px;
+}
+
+a {
+    text-decoration: none;
+}
