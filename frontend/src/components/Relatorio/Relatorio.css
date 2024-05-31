@@ -1,0 +1,46 @@
+.title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+    gap: 20px;
+}
+
+#newRel {
+    font-size: 24px;
+    text-decoration: none;
+    color: black;
+}
+
+#newRel:hover {
+    opacity: 0.7;
+}
+
+.relatorios-container {
+    width: 80%;
+}
+
+.relatorios {
+    margin-bottom: 20px;
+}
+
+.cards-relatorios {
+    padding: 20px;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card-rel {
+    border: 1px solid black;
+    width: 200px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.card-rel:hover{
+    background-color: black;
+    color: white;
+}

@@ -3,6 +3,8 @@ import { AuthContext } from '../../context/auth';
 import Header from '../../components/header/Header';
 import FichaUser from '../../components/FichaUser/FichaUser';
 import Loading from '../../components/Loading/Loading';
+import Relatorio from '../../components/Relatorio/Relatorio';
+import Footer from '../../components/Footer/Footer';
 
 const UserProfile = () => {
     const { user, getMe } = useContext(AuthContext);
@@ -10,58 +12,37 @@ const UserProfile = () => {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            if (!userData && user) { // Adiciona uma verificação para evitar chamadas repetitivas
+            if (!userData && user) {
                 const data = await getMe();
                 setUserData(data);
             }
         };
 
         fetchUserData();
-    }, [user, userData, getMe]); // Adiciona userData como dependência para garantir que não entre em loop
+    }, [user, userData, getMe]);
 
-    if (!userData) return <Loading/>;
-
-    function DescobrindoIdade(dataNascimeto) {
-        const hoje = new Date();
-        const nascimento = new Date(dataNascimeto);
-        let idade = hoje.getFullYear() - nascimento.getFullYear();
-        const mes = hoje.getMonth() - nascimento.getMonth();
-
-        // Verifica se o aniversário já passou este ano; se não, subtrai 1 da idade.
-        if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
-            idade--;
-        }
-
-        return idade;
-    }
-
-    function converterData(data) {
-        const [ano, mes, dia] = data.split('-');
-        return `${dia}/${mes}/${ano}`;
-    }
+    if (!userData) return <Loading />;
 
     return (
-        <>
-            <Header/>
-
-
-            {/* <h1>Perfil do Usuário</h1>
-            <p>Nome: {userData.nome}</p>
-            <p>Email: {userData.email}</p> */}
-            {/* Adicione outros campos conforme necessário */}
+        <div>
+            <Header />
 
             <div className='padrao'>
-                <FichaUser 
-                    nome={userData.nome} 
-                    idade={DescobrindoIdade(userData.data_nascimento) + ' anos'} 
-                    dataNascimento={converterData(userData.data_nascimento)}
-                    email={userData.email}
-                    telefone={userData.telefone}
-                />
-            </div>
+            <FichaUser 
+                userData={userData}
+                condEsp={userData.estudanteInfo?.condicao_especial || 'Não identificado'}
+                temperamento={userData.estudanteInfo?.temperamento || 'Não identificado'}
+                alergias={userData.estudanteInfo?.alergias || 'Não identificado'}
+                hiperfocos={userData.estudanteInfo?.hiperfocos || 'Não identificado'}
+                planoSaude={userData.estudanteInfo?.plano_saude || 'Não identificado'}
+            />
 
+            <Relatorio userId={userData.id} />
             
-        </>
+            </div>
+            
+            <Footer />
+        </div>
     );
 };
 

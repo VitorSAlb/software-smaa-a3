@@ -291,6 +291,8 @@ app.post('/relatorios', async (req, res) => {
     const { anotacoes, estudante_id, mediador_id } = req.body;
     const db = await openDB();
 
+    console.log('Received data:', { anotacoes, estudante_id, mediador_id });
+
     try {
         const estudante = await db.get(`SELECT * FROM usuarios WHERE id = ? AND tipo_usuario = 'estudante'`, [estudante_id]);
         if (!estudante) {
@@ -314,9 +316,11 @@ app.post('/relatorios', async (req, res) => {
 
         res.status(201).json({ message: 'Relatório criado com sucesso!' });
     } catch (error) {
+        console.error('Erro ao criar relatório:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
+
 
 // ------------------------------------------------- MÉTODOS GET -------------------------------------------------
 
@@ -328,16 +332,27 @@ app.get('/me', verifyToken, async (req, res) => {
             FROM usuarios
             WHERE id = ?
         `, [req.user.userId]);
-        
-        if (usuario) {
-            res.json(usuario);
-        } else {
-            res.status(404).json({ error: "Usuário não encontrado" });
+
+        if (!usuario) {
+            return res.status(404).json({ error: "Usuário não encontrado" });
         }
+
+        let estudanteInfo = null;
+
+        if (usuario.tipo_usuario === 'estudante') {
+            estudanteInfo = await db.get(`
+                SELECT turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude
+                FROM estudantes
+                WHERE usuario_id = ?
+            `, [req.user.userId]);
+        }
+
+        res.json({ ...usuario, estudanteInfo });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 
 // função para retornar um usuario especifico por ID
