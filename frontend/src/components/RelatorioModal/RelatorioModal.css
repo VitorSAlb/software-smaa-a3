@@ -1,0 +1,20 @@
+/* src/components/RelatorioModal.css */
+.modal-div {
+    min-height: 89%;
+}
+
+.modal-btn {
+    display: block;
+    width: 100%;
+    background-color: rgb(102, 102, 102);
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px; /* Para dar um espaço entre o conteúdo e o botão */
+}
+
+.modal-btn:hover {
+    background-color: darkred;
+}

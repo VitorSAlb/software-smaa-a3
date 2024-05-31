@@ -3,6 +3,8 @@ import { AuthContext } from '../../context/auth';
 import Header from '../../components/header/Header';
 import FichaUser from '../../components/FichaUser/FichaUser';
 import Loading from '../../components/Loading/Loading';
+import Relatorio from '../../components/Relatorio/Relatorio';
+import Footer from '../../components/Footer/Footer';
 
 const UserProfile = () => {
     const { user, getMe } = useContext(AuthContext);
@@ -44,12 +46,6 @@ const UserProfile = () => {
         <>
             <Header/>
 
-
-            {/* <h1>Perfil do Usuário</h1>
-            <p>Nome: {userData.nome}</p>
-            <p>Email: {userData.email}</p> */}
-            {/* Adicione outros campos conforme necessário */}
-
             <div className='padrao'>
                 <FichaUser 
                     nome={userData.nome} 
@@ -58,9 +54,13 @@ const UserProfile = () => {
                     email={userData.email}
                     telefone={userData.telefone}
                 />
+
+
+                <Relatorio/>
+
             </div>
 
-            
+            <Footer/>
         </>
     );
 };
