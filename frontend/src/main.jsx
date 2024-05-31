@@ -12,6 +12,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/auth.jsx';
 import User from './pages/userPage/User.jsx';
 import UserProfile from './pages/userPage/User.jsx';
+import ListAlunos from './pages/ListAlunos/ListAlunos.jsx';
 
 const Private = ({ Item }) => {
   const { user } = React.useContext(AuthContext);
@@ -40,8 +41,8 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: "/teste",
-    element: <App />,
+    path: "/list-alunos",
+    element: <Private Item={ListAlunos} />,
   },
 ]);
 

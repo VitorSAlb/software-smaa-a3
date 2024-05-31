@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import Header from "../../components/header/Header";
 import Card from "../../components/Card/Card";
 
@@ -6,12 +6,25 @@ import userIcon from '../../assets/user-icon.svg';
 import listIcon from '../../assets/list-user-icon.svg';
 import relaIcon from '../../assets/relatorio-icon.svg';
 import Footer from "../../components/Footer/Footer";
-
+import NovoRelatorioModal from "../../components/NovoRelatorioModal/NovoRelatorioModal"; // Certifique-se de usar o caminho correto
 
 import { AuthContext } from '../../context/auth';
 
 const Home = () => {
     const { user } = useContext(AuthContext);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleRelatorioCriado = () => {
+        // Lógica para quando o relatório for criado, se necessário
+    };
 
     return(
         <>
@@ -21,13 +34,19 @@ const Home = () => {
                 <Card titulo='Usuário' image={userIcon} link={'/'} />
                 {user && (user.tipo_usuario === 'mediador' || user.tipo_usuario === 'instituição') && (
                     <>
-                        <Card titulo='Lista de Alunos' image={listIcon} link={'/lista-de-alunos'} />
-                        <Card titulo='Relatório +' image={relaIcon} link={'/relatorio'} />
+                        <Card titulo='Lista de Alunos' image={listIcon} link={'/list-alunos'} />
+                        <Card titulo='Relatório +' image={relaIcon} onClick={openModal} />
                     </>
                 )}
             </main>
 
             <Footer />
+
+            <NovoRelatorioModal 
+                isOpen={isModalOpen} 
+                onRequestClose={closeModal} 
+                onRelatorioCriado={handleRelatorioCriado} 
+            />
         </>
     )
 }
