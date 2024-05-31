@@ -6,6 +6,7 @@ import Card from '../components/Card/Card';
 import userIcon from '../assets/user-icon.svg';
 import listIcon from '../assets/list-user-icon.svg';
 import relaIcon from '../assets/relatorio-icon.svg';
+import ReportForm from '../components/ReportForm/ReportFOrm';
 
 function App() {
   
@@ -18,6 +19,8 @@ function App() {
         <Card titulo='Usuário' image={userIcon}/>
         <Card titulo='Lista de Alunos' image={listIcon}/>
         <Card titulo='Relatório +' image={relaIcon}/>
+
+        <ReportForm/>
       </main>
       
     </>

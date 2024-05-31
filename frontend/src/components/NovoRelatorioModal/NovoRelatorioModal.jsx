@@ -34,6 +34,7 @@ const NovoRelatorioModal = ({ isOpen, onRequestClose, onRelatorioCriado }) => {
             alert('Todos os campos são obrigatórios');
             return;
         }
+
     
         try {
             const response = await axios.post('http://localhost:3000/relatorios', {
