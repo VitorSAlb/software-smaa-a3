@@ -48,8 +48,8 @@ const Header = (props) => {
             <nav>
                 <ul>
                     <li><Link to={'/home'}>Home</Link></li>
-                    <li><Link to={'/teste'}>Alunos</Link></li>
-                    <li><Link to={'/teste'}>Relatório</Link></li>
+                    <li><Link to={'/list-alunos'}>Alunos</Link></li>
+                    {/* <li><Link to={'/teste'}>Relatório</Link></li> */}
                 </ul>
             </nav>
 

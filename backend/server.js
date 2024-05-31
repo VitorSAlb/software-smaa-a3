@@ -168,6 +168,14 @@ const verifyStudent = (req, res, next) => {
     next();
 };
 
+const verifyMediator = (req, res, next) => {
+    if (req.user.userType !== 'mediador') {
+        return res.status(403).json({ error: 'Acesso negado. Somente mediadores podem executar esta ação.' });
+    }
+    next();
+};
+
+
 // Função para adicionar um novo usuário
 app.post('/usuarios', async (req, res) => {
     const { nome, data_nascimento, telefone, foto, email, username, senha, status, tipo_usuario } = req.body;
@@ -444,6 +452,32 @@ app.get('/mediadores', async (req, res) => {
     `);
     res.json(mediadores);
 });
+
+
+app.get('/estudantes/mediador/:mediadorId', verifyToken, async (req, res) => {
+    const { mediadorId } = req.params;
+    const db = await openDB();
+
+    try {
+        const estudantes = await db.all(`
+            SELECT u.*, e.*
+            FROM usuarios u
+            JOIN estudantes e ON u.id = e.usuario_id
+            WHERE e.mediador_id = ?
+        `, [mediadorId]);
+
+        if (estudantes.length === 0) {
+            return res.status(404).json({ message: "Nenhum estudante encontrado para este mediador." });
+        }
+
+        res.json(estudantes);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
 
 // Função para retornar uma instituição específica
 app.get('/instituicoes/:id', async (req, res) => {
