@@ -287,11 +287,13 @@ app.post('/estudantes', async (req, res) => {
     }
 });
 
-app.post('/relatorios', async (req, res) => {
+app.post('/relatorios', verifyToken, async (req, res) => {
+    if (req.user.userType !== 'mediador') {
+        return res.status(403).json({ error: 'Acesso negado. Somente mediadores podem criar relatórios.' });
+    }
+
     const { anotacoes, estudante_id, mediador_id } = req.body;
     const db = await openDB();
-
-    console.log('Received data:', { anotacoes, estudante_id, mediador_id });
 
     try {
         const estudante = await db.get(`SELECT * FROM usuarios WHERE id = ? AND tipo_usuario = 'estudante'`, [estudante_id]);
@@ -304,11 +306,6 @@ app.post('/relatorios', async (req, res) => {
             return res.status(404).json({ error: 'Mediador não encontrado ou não é do tipo mediador.' });
         }
 
-        const existingReport = await db.get(`SELECT * FROM relatorios WHERE estudante_id = ?`, [estudante_id]);
-        if (existingReport) {
-            return res.status(400).json({ error: 'O estudante já possui um relatório.' });
-        }
-
         await db.run(`
             INSERT INTO relatorios (anotacoes, estudante_id, mediador_id, data_criacao)
             VALUES (?, ?, ?, CURRENT_TIMESTAMP)
@@ -316,11 +313,9 @@ app.post('/relatorios', async (req, res) => {
 
         res.status(201).json({ message: 'Relatório criado com sucesso!' });
     } catch (error) {
-        console.error('Erro ao criar relatório:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
-
 
 // ------------------------------------------------- MÉTODOS GET -------------------------------------------------
 
@@ -415,6 +410,35 @@ app.get('/estudantes', async (req, res) => {
         WHERE u.tipo_usuario = 'estudante'
     `);
     res.json(estudantes);
+});
+
+app.get('/mediadores/:mediador_id/estudantes', verifyToken, async (req, res) => {
+    const mediador_id = req.params.mediador_id;
+
+    // Verificar se o usuário autenticado é um mediador
+    if (req.user.userType !== 'mediador') {
+        return res.status(403).json({ error: 'Acesso negado. Somente mediadores podem acessar esta informação.' });
+    }
+
+    // Verificar se o mediador autenticado está tentando acessar seus próprios estudantes
+    if (req.user.userId !== parseInt(mediador_id)) {
+        return res.status(403).json({ error: 'Acesso negado. Você só pode acessar seus próprios estudantes.' });
+    }
+
+    const db = await openDB();
+
+    try {
+        const estudantes = await db.all(`
+            SELECT DISTINCT u.id, u.nome, u.email
+            FROM usuarios u
+            JOIN relatorios r ON u.id = r.estudante_id
+            WHERE r.mediador_id = ? AND u.tipo_usuario = 'estudante'
+        `, [mediador_id]);
+
+        res.status(200).json(estudantes);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Função para retornar um mediador específico
