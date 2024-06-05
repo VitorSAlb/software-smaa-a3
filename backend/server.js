@@ -612,32 +612,34 @@ app.put('/usuarios/:id', verifyToken, async (req, res) => {
 });
 
 // Função para atualizar atributos específicos de um estudante
-app.put('/estudantes/:id/especifico', verifyToken, verifyStudent, async (req, res) => {
+app.put('/estudantes/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
-    const { turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude } = req.body;
+    const { nome, data_nascimento, telefone, foto, email, username, senha, status, turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude } = req.body;
     const db = await openDB();
 
     try {
-        const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [id]);
+        const estudante = await db.get(`SELECT * FROM usuarios WHERE id = ? AND tipo_usuario = 'estudante'`, [id]);
 
         if (!estudante) {
             res.status(404).json({ error: 'Estudante não encontrado.' });
             return;
         }
 
-        // Verifica se o estudante que está tentando editar é o mesmo que está logado
-        if (req.user.userId !== estudante.usuario_id) {
-            res.status(403).json({ error: 'Acesso negado. Você só pode editar seus próprios dados.' });
-            return;
-        }
+        // Atualizar dados na tabela `usuarios`
+        await db.run(`
+            UPDATE usuarios
+            SET nome = ?, data_nascimento = ?, telefone = ?, foto = ?, email = ?, username = ?, senha = ?, status = ?
+            WHERE id = ?
+        `, [nome, data_nascimento, telefone, foto, email, username, senha, status, id]);
 
+        // Atualizar dados na tabela `estudantes`
         await db.run(`
             UPDATE estudantes
             SET turma = ?, temperamento = ?, condicao_especial = ?, metodos_tecnicas = ?, alergias = ?, plano_saude = ?
             WHERE usuario_id = ?
         `, [turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude, id]);
 
-        res.status(200).json({ message: 'Dados específicos do estudante atualizados com sucesso!' });
+        res.status(200).json({ message: 'Dados do estudante atualizados com sucesso!' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -701,6 +703,110 @@ app.put('/instituicoes/:id/especifico', verifyToken, async (req, res) => {
     }
 });
 
+app.put('/estudantes/:estudanteId/atribuir-mediador/:mediadorId', verifyToken, async (req, res) => {
+    const { estudanteId, mediadorId } = req.params;
+    const db = await openDB();
+
+    try {
+        // Verificar se o usuário é do tipo instituição
+        const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [req.user.userId]);
+        if (!usuario || usuario.tipo_usuario !== 'instituicao') {
+            res.status(403).json({ error: 'Acesso negado. Somente instituições podem executar esta ação.' });
+            return;
+        }
+
+        // Verificar se o estudante existe
+        const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [estudanteId]);
+        if (!estudante) {
+            res.status(404).json({ error: 'Estudante não encontrado.' });
+            return;
+        }
+
+        // Verificar se o mediador existe
+        const mediador = await db.get(`SELECT * FROM mediadores WHERE usuario_id = ?`, [mediadorId]);
+        if (!mediador) {
+            res.status(404).json({ error: 'Mediador não encontrado.' });
+            return;
+        }
+
+        // Atribuir mediador ao estudante
+        await db.run(`
+            UPDATE estudantes
+            SET mediador_id = ?
+            WHERE usuario_id = ?
+        `, [mediadorId, estudanteId]);
+
+        res.status(200).json({ message: 'Mediador atribuído ao estudante com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ------------------------------------------------- MÉTODOS DELETE -------------------------------------------------
+// Funçãoo para deletar um usuario especifico por ID
+app.delete('/usuarios/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    const db = await openDB();
+
+    try {
+        const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [id]);
+
+        if (!usuario) {
+            res.status(404).json({ error: 'Usuário não encontrado.' });
+            return;
+        }
+
+        // Verifica se o usuário que está tentando deletar é o mesmo que está logado ou se é uma instituição
+        if (req.user.userId !== usuario.id && req.user.userType !== 'instituicao') {
+            res.status(403).json({ error: 'Acesso negado. Você só pode deletar seus próprios dados ou ser uma instituição.' });
+            return;
+        }
+
+        // Deletar dados específicos de cada tipo de usuário
+        if (usuario.tipo_usuario === 'estudante') {
+            await db.run(`DELETE FROM estudantes WHERE usuario_id = ?`, [id]);
+        } else if (usuario.tipo_usuario === 'mediador') {
+            await db.run(`DELETE FROM mediadores WHERE usuario_id = ?`, [id]);
+        } else if (usuario.tipo_usuario === 'instituicao') {
+            await db.run(`DELETE FROM instituicoes WHERE usuario_id = ?`, [id]);
+        }
+
+        // Deletar o usuário da tabela 'usuarios'
+        await db.run(`DELETE FROM usuarios WHERE id = ?`, [id]);
+
+        res.status(200).json({ message: 'Usuário deletado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+app.delete('/relatorios/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    const db = await openDB();
+
+    try {
+        const relatorio = await db.get(`SELECT * FROM relatorios WHERE id = ?`, [id]);
+
+        if (!relatorio) {
+            res.status(404).json({ error: 'Relatório não encontrado.' });
+            return;
+        }
+
+        // Verifica se o usuário que está tentando deletar é o mediador ou estudante do relatório
+        if (req.user.userId !== relatorio.mediador_id && req.user.userId !== relatorio.estudante_id) {
+            res.status(403).json({ error: 'Acesso negado. Você só pode deletar seus próprios relatórios.' });
+            return;
+        }
+
+        // Deletar o relatório da tabela 'relatorios'
+        await db.run(`DELETE FROM relatorios WHERE id = ?`, [id]);
+
+        res.status(200).json({ message: 'Relatório deletado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 //-------------------------------------------------------------------------------------------------------
 //Inicialização do servidor e criação das tabelas--------------------------------------------------------
 app.listen(PORT, async () => {
