@@ -500,7 +500,36 @@ app.get('/estudantes/mediador/:mediadorId', verifyToken, async (req, res) => {
     }
 });
 
+app.get('/usuarios/instituicao/:instituicaoId', verifyToken, async (req, res) => {
+    const { instituicaoId } = req.params;
+    const db = await openDB();
 
+    try {
+        const usuariosEstudantes = await db.all(`
+            SELECT u.*, e.*
+            FROM usuarios u
+            JOIN estudantes e ON u.id = e.usuario_id
+            WHERE e.instituicao_id = ?
+        `, [instituicaoId]);
+
+        const usuariosMediadores = await db.all(`
+            SELECT u.*, m.*
+            FROM usuarios u
+            JOIN mediadores m ON u.id = m.usuario_id
+            WHERE m.instituicao_id = ?
+        `, [instituicaoId]);
+
+        const usuarios = [...usuariosEstudantes, ...usuariosMediadores];
+
+        if (usuarios.length === 0) {
+            return res.status(404).json({ message: "Nenhum usuário encontrado para esta instituição." });
+        }
+
+        res.json(usuarios);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 
 // Função para retornar uma instituição específica
@@ -635,6 +664,7 @@ app.put('/usuarios/:id', verifyToken, async (req, res) => {
     }
 });
 
+
 // Função para atualizar atributos específicos de um estudante
 app.put('/estudantes/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
@@ -648,13 +678,6 @@ app.put('/estudantes/:id', verifyToken, async (req, res) => {
             res.status(404).json({ error: 'Estudante não encontrado.' });
             return;
         }
-
-        // Atualizar dados na tabela `usuarios`
-        await db.run(`
-            UPDATE usuarios
-            SET nome = ?, data_nascimento = ?, telefone = ?, foto = ?, email = ?, username = ?, senha = ?, status = ?
-            WHERE id = ?
-        `, [nome, data_nascimento, telefone, foto, email, username, senha, status, id]);
 
         // Atualizar dados na tabela `estudantes`
         await db.run(`
