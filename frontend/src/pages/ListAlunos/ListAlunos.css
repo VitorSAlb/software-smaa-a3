@@ -43,3 +43,23 @@
 a {
     text-decoration: none;
 }
+
+.titulinho {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.titulinho a {
+    background-color: #055902;
+    color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.titulinho a:hover {
+    opacity: 0.7;
+}
+

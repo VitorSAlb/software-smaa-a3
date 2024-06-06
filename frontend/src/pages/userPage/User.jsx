@@ -4,12 +4,14 @@ import Header from '../../components/header/Header';
 import FichaUser from '../../components/FichaUser/FichaUser';
 import Loading from '../../components/Loading/Loading';
 import Relatorio from '../../components/Relatorio/Relatorio';
-import Footer from '../../components/Footer/Footer';
+import ModalEditarUsuario from '../../components/ModalEditUser/ModalEditarUsuario';
+import ModalEditarFichaEstudante from '../../components/ModalEditFichaEstudante/ModalEditarFichaEstudante';
 
 const UserProfile = () => {
     const { user, getMe } = useContext(AuthContext);
     const [userData, setUserData] = useState(null);
-
+    const [showEditUserModal, setShowEditUserModal] = useState(false);
+    const [showEditFichaModal, setShowEditFichaModal] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -22,15 +24,24 @@ const UserProfile = () => {
         fetchUserData();
     }, [user, userData, getMe]);
 
+    const handleEditUserClick = () => {
+        setShowEditUserModal(true);
+    };
 
+    const handleEditFichaClick = () => {
+        setShowEditFichaModal(true);
+    };
 
+    const handleCloseModals = () => {
+        setShowEditUserModal(false);
+        setShowEditFichaModal(false);
+    };
 
     if (!userData) return <Loading />;
 
     return (
         <div>
             <Header />
-
             <div className='padrao'>
                 <FichaUser 
                     userData={userData}
@@ -39,14 +50,28 @@ const UserProfile = () => {
                     alergias={userData.estudanteInfo?.alergias || 'Não identificado'}
                     hiperfocos={userData.estudanteInfo?.hiperfocos || 'Não identificado'}
                     planoSaude={userData.estudanteInfo?.plano_saude || 'Não identificado'}
-                    onEditName={() => openEditModal('Nome')} // Adicione um prop para abrir o modal de edição do nome
+                    token={user.token} // Adicionei o token aqui, se necessário
                 />
-
+                {user.tipo_usuario === 'estudante' && (
+                    <button onClick={handleEditFichaClick}>Editar Ficha</button>
+                )}
+                <button onClick={handleEditUserClick}>Editar Dados</button>
                 <Relatorio userId={userData.id} />
-                
             </div>
-            
-            <Footer />
+            {showEditUserModal && (
+                <ModalEditarUsuario
+                    isOpen={showEditUserModal} // Adicionei isOpen aqui
+                    userData={userData}
+                    handleClose={handleCloseModals}
+                />
+            )}
+            {showEditFichaModal && (
+                <ModalEditarFichaEstudante
+                    isOpen={showEditFichaModal} // Adicionei isOpen aqui
+                    userData={userData}
+                    handleClose={handleCloseModals}
+                />
+            )}
         </div>
     );
 };

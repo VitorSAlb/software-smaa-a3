@@ -23,7 +23,7 @@ const Home = () => {
     };
 
     const handleRelatorioCriado = () => {
-        // Lógica para quando o relatório for criado, se necessário
+
     };
 
     return(
@@ -32,12 +32,17 @@ const Home = () => {
 
             <main>
                 <Card titulo='Usuário' image={userIcon} link={'/'} />
-                {user && (user.tipo_usuario === 'mediador' || user.tipo_usuario === 'instituição') && (
+                {user && (user.tipo_usuario === 'mediador' || user.tipo_usuario === 'instituicao') && (
                     <>
                         <Card titulo='Lista de Alunos' image={listIcon} link={'/list-alunos'} />
+                    </>
+                )}
+                {user && (user.tipo_usuario === 'mediador') && (
+                    <>
                         <Card titulo='Relatório +' image={relaIcon} onClick={openModal} />
                     </>
                 )}
+
             </main>
 
             <Footer />

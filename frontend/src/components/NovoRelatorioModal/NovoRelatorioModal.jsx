@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import axios from 'axios';
 import './NovoRelatorioModal.css';
 import { AuthContext } from '../../context/auth';
+import api from '../../api/api';
 
 Modal.setAppElement('#root');
 
@@ -13,17 +14,19 @@ const NovoRelatorioModal = ({ isOpen, onRequestClose, onRelatorioCriado }) => {
     const [anotacoes, setAnotacoes] = useState('');
 
     useEffect(() => {
-        const fetchEstudantes = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/estudantes');
-                setEstudantes(response.data);
-            } catch (error) {
-                console.error('Erro ao buscar estudantes:', error);
+        const fetchStudents = async () => {
+            if (user) {
+                try {
+                    const response = await api.get(`/estudantes/mediador/${user.id}`);
+                    setEstudantes(response.data);
+                } catch (error) {
+                    console.error('Erro ao buscar estudantes:', error);
+                } 
             }
         };
 
         if (isOpen) {
-            fetchEstudantes();
+            fetchStudents();
         }
     }, [isOpen]);
 
@@ -37,10 +40,11 @@ const NovoRelatorioModal = ({ isOpen, onRequestClose, onRelatorioCriado }) => {
 
     
         try {
-            const response = await axios.post('http://localhost:3000/relatorios', {
+            const response = await api.post('/relatorios', {
+                anotacoes: anotacoes,
                 estudante_id: selectedEstudante,
-                mediador_id: user.id,
-                anotacoes: anotacoes
+                mediador_id: user.id
+                
             });
     
             console.log('Relatório criado com sucesso:', response.data);
