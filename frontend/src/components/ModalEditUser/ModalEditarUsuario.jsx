@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import axios from 'axios';
 import api from '../../api/api';
+import './styles.css'
 
 Modal.setAppElement('#root');
 
@@ -28,28 +28,63 @@ const ModalEditarUsuario = ({ isOpen, userData, handleClose }) => {
         try {
             await api.put(`/usuarios/${userData.id}`, formData);
             handleClose();
+            window.location.reload();
         } catch (error) {
             console.error('Erro ao atualizar usuário:', error);
         }
     };
 
+    const customStyles = {
+        content: {
+            width: 'fit-content',
+            minHeight: '400px',
+            height: 'fit-content',
+            background: '#fff',
+            padding: '20px',
+            borderRadius: '10px',
+            margin: 'auto',
+        },
+        overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.75)'
+        }
+    };
+
     return (
-        <Modal isOpen={isOpen} onRequestClose={handleClose}>
-            <div>
-                <h2>Editar Dados do Usuário</h2>
+        <Modal isOpen={isOpen} onRequestClose={handleClose} style={customStyles}>
+            <div className='.no-selection'>
+                <h2 className='no-selection'>Editar Dados do Usuário</h2>
                 <form onSubmit={handleSubmit}>
-                    <input type="text" name="nome" value={formData.nome} onChange={handleChange} />
-                    <input type="date" name="data_nascimento" value={formData.data_nascimento} onChange={handleChange} />
-                    <input type="text" name="telefone" value={formData.telefone} onChange={handleChange} />
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} />
-                    <input type="text" name="username" value={formData.username} onChange={handleChange} />
-                    <input type="password" name="senha" placeholder="Nova senha" onChange={handleChange} />
-                    <select name="status" value={formData.status} onChange={handleChange}>
-                        <option value="ativo">Ativo</option>
-                        <option value="inativo">Inativo</option>
-                    </select>
-                    <button type="submit">Salvar</button>
-                    <button type="button" onClick={handleClose}>Cancelar</button>
+                    <label>
+                        Nome:
+                        <br/>
+                        <input type="text" name="nome" placeholder={formData.nome} onChange={handleChange} size={50} />
+                    </label>
+                    <label>
+                        Email:
+                        <br/>
+                        <input type="email" name="email" value={formData.email} placeholder='example@sapa.com' onChange={handleChange} size={50} />
+                    </label>
+                    <label>
+                        Nova Senha:
+                        <br/>
+                        <input className='input-max' type="text" name="senha" value={formData.senha} placeholder="Nova senha" onChange={handleChange} />
+                    </label>
+                    <div className='row-label'>
+                        <label>
+                            Data de Nascimento:
+                            <br/>
+                            <input type="date" name="data_nascimento" value={formData.data_nascimento} onChange={handleChange} />
+                        </label>
+                        <label>
+                            Telefone:
+                            <br/>
+                            <input type="tel" name="telefone" value={formData.telefone} placeholder='(xx) xxxxx-xxxx' onChange={handleChange} />
+                        </label>
+                    </div>
+                    
+
+                    <button className='btn-modal' type="submit">Salvar</button>
+                    <button className='btn-modal red' type="button" onClick={handleClose}>Cancelar</button>
                 </form>
             </div>
         </Modal>

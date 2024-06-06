@@ -1,17 +1,32 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import './Cadastro.css';
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/header/Header";
 import Footer from "../../components/Footer/Footer";
+import { AuthContext } from "../../context/auth";
 
 const Cadastro = () => {
+    const { user, getMe } = useContext(AuthContext);
+    const [userData, setUserData] = useState(null);
+
     const [nome, setNome] = useState('');
-    const [idade, setIdade] = useState('');
     const [telefone, setTelefone] = useState('');
     const [dataNascimento, setDataNascimento] = useState('');
     const [email, setEmail] = useState('');
-    const [tipoUsuario, setTipoUsuario] = useState(null); // Estado separado para cada tipo de usuário
+    const [tipoUsuario, setTipoUsuario] = useState(null);
     const navigate = useNavigate();
+
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!userData && user) {
+                const data = await getMe();
+                setUserData(data);
+            }
+        };
+
+        fetchUserData();
+    }, [user, userData, getMe]);
 
     const handleCheckboxChange = (tipo) => {
         setTipoUsuario(tipo);
@@ -117,7 +132,7 @@ const Cadastro = () => {
                             </div>
                             <div className="button-section">
                                 <button type="submit">Cadastrar</button>
-                                <Link to={'/'}><a>Ir para login</a></Link>
+                                {/* <Link to={'/'}><a>Ir para login</a></Link> */}
                             </div>
                         </form>
                     </div>

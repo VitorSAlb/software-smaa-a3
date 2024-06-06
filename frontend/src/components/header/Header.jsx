@@ -45,13 +45,17 @@ const Header = (props) => {
                 <Link className="link-tag" to={'/'}><p>{userData.nome}</p></Link>
             </div>
             
-            <nav>
+            <nav className="nav-center">
                 <ul>
                     <li><Link to={'/home'}>Home</Link></li>
-                    <li><Link to={'/list-alunos'}>Alunos</Link></li>
-                    {/* <li><Link to={'/teste'}>Relatório</Link></li> */}
+                    {userData && ( userData.tipo_usuario === 'instituicao' || userData.tipo_usuario === 'mediador') && (
+                        <li><Link to={'/list-alunos'}>Alunos</Link></li>
+                    )}
+                    
+
                 </ul>
             </nav>
+
 
             <div className="logout">
                 <button onClick={handleLogout} className="btn-logout">Sair</button>

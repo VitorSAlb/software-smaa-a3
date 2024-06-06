@@ -789,6 +789,38 @@ app.put('/estudantes/:estudanteId/atribuir-mediador/:mediadorId', verifyToken, a
     }
 });
 
+app.put('/estudantes/:estudanteId/atribuir-mediador/:mediadorId', verifyToken, async (req, res) => {
+    const { estudanteId, mediadorId } = req.params;
+    const db = await openDB();
+
+    try {
+        // Verificar se o usuário é do tipo instituição
+        const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [req.user.userId]);
+        if (!usuario || usuario.tipo_usuario !== 'instituicao') {
+            return res.status(403).json({ error: 'Acesso negado. Somente instituições podem executar esta ação.' });
+        }
+
+        // Verificar se o estudante e o mediador existem
+        const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [estudanteId]);
+        const mediador = await db.get(`SELECT * FROM mediadores WHERE usuario_id = ?`, [mediadorId]);
+
+        if (!estudante) {
+            return res.status(404).json({ error: 'Estudante não encontrado.' });
+        }
+
+        if (!mediador) {
+            return res.status(404).json({ error: 'Mediador não encontrado.' });
+        }
+
+        // Atualizar o mediador do estudante
+        await db.run(`UPDATE estudantes SET mediador_id = ? WHERE usuario_id = ?`, [mediadorId, estudanteId]);
+
+        res.status(200).json({ message: 'Estudante alocado ao mediador com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // ------------------------------------------------- MÉTODOS DELETE -------------------------------------------------
 // Funçãoo para deletar um usuario especifico por ID
 app.delete('/usuarios/:id', verifyToken, async (req, res) => {
@@ -850,6 +882,41 @@ app.delete('/relatorios/:id', verifyToken, async (req, res) => {
         await db.run(`DELETE FROM relatorios WHERE id = ?`, [id]);
 
         res.status(200).json({ message: 'Relatório deletado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete('/usuarios/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    const db = await openDB();
+
+    try {
+        // Verificar se o usuário é do tipo instituição
+        const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [req.user.userId]);
+        if (!usuario || usuario.tipo_usuario !== 'instituicao') {
+            return res.status(403).json({ error: 'Acesso negado. Somente instituições podem executar esta ação.' });
+        }
+
+        // Verificar se o usuário a ser deletado existe
+        const usuarioToDelete = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [id]);
+        if (!usuarioToDelete) {
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
+        }
+
+        // Deletar o usuário das tabelas específicas
+        if (usuarioToDelete.tipo_usuario === 'estudante') {
+            await db.run(`DELETE FROM estudantes WHERE usuario_id = ?`, [id]);
+        } else if (usuarioToDelete.tipo_usuario === 'mediador') {
+            await db.run(`DELETE FROM mediadores WHERE usuario_id = ?`, [id]);
+        } else if (usuarioToDelete.tipo_usuario === 'instituicao') {
+            await db.run(`DELETE FROM instituicoes WHERE usuario_id = ?`, [id]);
+        }
+
+        // Deletar o usuário da tabela principal
+        await db.run(`DELETE FROM usuarios WHERE id = ?`, [id]);
+
+        res.status(200).json({ message: 'Usuário deletado com sucesso!' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

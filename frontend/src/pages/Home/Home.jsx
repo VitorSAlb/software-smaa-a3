@@ -34,7 +34,7 @@ const Home = () => {
                 <Card titulo='Usuário' image={userIcon} link={'/'} />
                 {user && (user.tipo_usuario === 'mediador' || user.tipo_usuario === 'instituicao') && (
                     <>
-                        <Card titulo='Lista de Alunos' image={listIcon} link={'/list-alunos'} />
+                        <Card titulo='Lista' image={listIcon} link={'/list-alunos'} />
                     </>
                 )}
                 {user && (user.tipo_usuario === 'mediador') && (
@@ -45,7 +45,7 @@ const Home = () => {
 
             </main>
 
-            <Footer />
+            {/* <Footer /> */}
 
             <NovoRelatorioModal 
                 isOpen={isModalOpen} 

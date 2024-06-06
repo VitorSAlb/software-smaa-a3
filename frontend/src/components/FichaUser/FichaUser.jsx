@@ -1,9 +1,6 @@
-import React, { useState } from "react";
-import axios from 'axios';
 import './FichaUser.css';
-import api from "../../api/api";
 
-const FichaUser = ({ userData, condEsp, temperamento, alergias, hiperfocos, planoSaude, token }) => {
+const FichaUser = ({ userData, condEsp, temperamento, alergias, hiperfocos, planoSaude }) => {
     function DescobrindoIdade(dataNascimento) {
         const hoje = new Date();
         const nascimento = new Date(dataNascimento);
@@ -43,25 +40,26 @@ const FichaUser = ({ userData, condEsp, temperamento, alergias, hiperfocos, plan
                         <h4>{userData.telefone || 'undefined'}</h4>
     
                     </div>
-                    
-                    <div className="ficha">
-                        <div className="section-one">
-                            <div className="titulo-ficha">
-                                <h3>Ficha Rápida:</h3>
-                                <br/>   
-                            </div>
-                            <div className="lista-rapida">
-                                <div className="list">
-                                    <h3><strong>Condição Especial:</strong> {condEsp}</h3>
-                                    <h3><strong>Temperamento:</strong> {temperamento}</h3>
-                                    <h3><strong>Alergias:</strong> {alergias}</h3>
-                                    <h3><strong>Hiperfocos:</strong> {hiperfocos}</h3>
-                                    <h3><strong>Plano de Saúde:</strong> {planoSaude}</h3>
+                    {userData && ( userData.tipo_usuario === 'estudante') && (
+                        <div className="ficha">
+                            <div className="section-one">
+                                <div className="titulo-ficha">
+                                    <h3>Ficha Rápida:</h3>
+                                    <br/>   
                                 </div>
+                                
+                                    <div className="lista-rapida">
+                                        <div className="list">
+                                            <h3><strong>Condição Especial:</strong> {condEsp}</h3>
+                                            <h3><strong>Temperamento:</strong> {temperamento}</h3>
+                                            <h3><strong>Alergias:</strong> {alergias}</h3>
+                                            <h3><strong>Hiperfocos:</strong> {hiperfocos}</h3>
+                                            <h3><strong>Plano de Saúde:</strong> {planoSaude}</h3>
+                                        </div>
+                                    </div>     
                             </div>
                         </div>
-                    </div>
-                    
+                    )}
                 </div>
             </div>
 

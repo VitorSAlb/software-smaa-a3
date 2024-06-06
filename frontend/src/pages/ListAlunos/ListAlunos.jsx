@@ -12,6 +12,7 @@ const StudentList = () => {
     const { user } = useContext(AuthContext);
     const [students, setStudents] = useState([]);
     const [allUser, setAllUsers] = useState([]);
+    const [mediators, setMediators] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -21,7 +22,7 @@ const StudentList = () => {
                     const response = await api.get(`/usuarios/instituicao/${user.id}`);
                     setAllUsers(response.data);
                 } catch (error) {
-                    console.error('Erro ao buscar estudantes:', error);
+                    console.error('Erro ao buscar usuários:', error);
                 } finally {
                     setLoading(false);
                 }
@@ -39,9 +40,40 @@ const StudentList = () => {
                 }
             }
         };
+        const fetchMediators = async () => {
+            if (user) {
+                try {
+                    const response = await api.get(`/mediadores/${user.id}`);
+                    setMediators(response.data);
+                } catch (error) {
+                    console.error('Erro ao buscar mediadores:', error);
+                }
+            }
+        };
+
+        
         fetchAllUsers();
         fetchStudents();
+        fetchMediators();
     }, [user]);
+
+    const handleDeleteUser = async (userId) => {
+        try {
+            await api.delete(`/usuarios/${userId}`);
+            setAllUsers(allUser.filter(user => user.id !== userId));
+        } catch (error) {
+            console.error('Erro ao deletar usuário:', error);
+        }
+    };
+
+    const handleAssignMediator = async (studentId, mediatorId) => {
+        try {
+            await api.post(`/estudantes/${studentId}/mediador`, { mediatorId });
+            // Atualize a lista de estudantes ou faça alguma ação de feedback
+        } catch (error) {
+            console.error('Erro ao definir mediador:', error);
+        }
+    };
 
     if (loading) {
         return <Loading />;
@@ -51,8 +83,6 @@ const StudentList = () => {
         <div className="student-list-container">
             <Header/>
             <div className="student-list-content">
-                
-
                 {user && (user.tipo_usuario === 'instituicao') && (
                     <>
                         <div className='titulinho'>
@@ -62,19 +92,38 @@ const StudentList = () => {
                         
                         {allUser.length > 0 ? (
                             <ul className="student-list">
-                            {allUser.map(student => (
-                                <li key={student.id}>
-                                    <Link to={`/perfil/${allUser.id}`} className="student-link"> {/* Adicione o Link aqui */}
+                                {allUser.map(student => (
+                                    <li key={student.id}>
                                         <div className="student-card">
-                                            <p><strong>Nome:</strong> {student.nome}</p>
-                                            <p><strong>Email:</strong> {student.email}</p>
+                                            <Link to={`/perfil/${student.id}`} className="student-link"> {/* Corrigido aqui */}
+                                                <div>
+                                                    <p><strong>Nome:</strong> {student.nome}</p>
+                                                    <p><strong>Email:</strong> {student.email}</p>
+                                                    {student.tipo_usuario === 'mediador' && (
+                                                        <p><strong>MediadorID:</strong> {student.id}</p>
+                                                    )}
+                                                </div>
+                                            </Link>
+                                            <div className="action-buttons">
+                                                {student.tipo_usuario === 'estudante' && (
+                                                    <select
+                                                        onChange={(e) => handleAssignMediator(student.id, e.target.value)}
+                                                        defaultValue=""
+                                                    >
+                                                        <option value="" disabled>Selecione um mediador</option>
+                                                        {mediators.map(mediator => (
+                                                            <option key={mediator.id} value={mediator.id}>{mediator.nome}</option>
+                                                        ))}
+                                                    </select>
+                                                )}
+                                                <button onClick={() => handleDeleteUser(student.id)}>Deletar</button>
+                                            </div>
                                         </div>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
+                                    </li>
+                                ))}
+                            </ul>
                         ) : (
-                            <p>Não há estudantes associados a este perfil.</p>
+                            <p>Não há usuários associados a esta instituição.</p>
                         )}
                     </>
                 )}
@@ -83,17 +132,19 @@ const StudentList = () => {
                         <h1>Lista de Estudantes</h1>
                         {students.length > 0 ? (
                             <ul className="student-list">
-                            {students.map(student => (
-                                <li key={student.id}>
-                                    <Link to={`/perfil/${students.id}`} className="student-link"> {/* Adicione o Link aqui */}
+                                {students.map(student => (
+                                    <li key={student.id}>
                                         <div className="student-card">
-                                            <p><strong>Nome:</strong> {student.nome}</p>
-                                            <p><strong>Email:</strong> {student.email}</p>
+                                            <Link to={`/perfil/${student.id}`} className="student-link"> {/* Corrigido aqui */}
+                                                <div>
+                                                    <p><strong>Nome:</strong> {student.nome}</p>
+                                                    <p><strong>Email:</strong> {student.email}</p>
+                                                </div>
+                                            </Link>
                                         </div>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
+                                    </li>
+                                ))}
+                            </ul>
                         ) : (
                             <p>Não há estudantes associados a este perfil.</p>
                         )}

@@ -51,6 +51,7 @@ const NovoRelatorioModal = ({ isOpen, onRequestClose, onRelatorioCriado }) => {
     
             onRequestClose();
             onRelatorioCriado();
+            window.location.reload();
         } catch (error) {
             console.error('Erro ao criar relatório:', error);
             alert('Erro ao criar relatório');
