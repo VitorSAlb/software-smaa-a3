@@ -12,6 +12,7 @@ const NovoRelatorioModal = ({ isOpen, onRequestClose, onRelatorioCriado }) => {
     const [estudantes, setEstudantes] = useState([]);
     const [selectedEstudante, setSelectedEstudante] = useState('');
     const [anotacoes, setAnotacoes] = useState('');
+    const [erro, setErro] = useState('');
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -34,7 +35,7 @@ const NovoRelatorioModal = ({ isOpen, onRequestClose, onRelatorioCriado }) => {
         e.preventDefault();
     
         if (!selectedEstudante || !anotacoes) {
-            alert('Todos os campos são obrigatórios');
+            setErro('Todos os campos são obrigatórios');
             return;
         }
 
@@ -54,7 +55,6 @@ const NovoRelatorioModal = ({ isOpen, onRequestClose, onRelatorioCriado }) => {
             window.location.reload();
         } catch (error) {
             console.error('Erro ao criar relatório:', error);
-            alert('Erro ao criar relatório');
         }
     };
 
@@ -78,6 +78,7 @@ const NovoRelatorioModal = ({ isOpen, onRequestClose, onRelatorioCriado }) => {
                         Anotações:
                         <textarea value={anotacoes} onChange={(e) => setAnotacoes(e.target.value)} />
                     </label>
+                    {erro && <p className="erro">{erro}</p>}
                     <button type="submit">Criar Relatório</button>
                 </form>
                 <button className='modal-btn' onClick={onRequestClose}>Fechar</button>

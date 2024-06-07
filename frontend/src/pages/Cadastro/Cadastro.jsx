@@ -6,7 +6,7 @@ import Footer from "../../components/Footer/Footer";
 import { AuthContext } from "../../context/auth";
 
 const Cadastro = () => {
-    const { user, getMe } = useContext(AuthContext);
+    const { user, getMe, instituicoes } = useContext(AuthContext);
     const [userData, setUserData] = useState(null);
 
     const [nome, setNome] = useState('');
@@ -14,8 +14,8 @@ const Cadastro = () => {
     const [dataNascimento, setDataNascimento] = useState('');
     const [email, setEmail] = useState('');
     const [tipoUsuario, setTipoUsuario] = useState(null);
+    const [instituicaoId, setInstituicaoId] = useState('');
     const navigate = useNavigate();
-
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -48,8 +48,17 @@ const Cadastro = () => {
             username: email,
             senha: 'abc123',
             status: true,
-            tipo_usuario: tipoUsuario
+            tipo_usuario: tipoUsuario,
         };
+
+        // Se o tipo de usuário for 'mediador' ou 'estudante', inclua o instituicaoId
+        if (tipoUsuario === 'mediador' || tipoUsuario === 'estudante') {
+            if (!instituicaoId) {
+                alert('Selecione a instituição');
+                return;
+            }
+            usuario.instituicao_id = instituicaoId;
+        }
 
         try {
             const response = await fetch('http://localhost:3000/usuarios', {
@@ -130,9 +139,15 @@ const Cadastro = () => {
                                     Estudante
                                 </label>
                             </div>
+                            <input
+                                value={instituicaoId}
+                                onChange={(e) => setInstituicaoId(e.target.value)}
+                                required
+                            />
+    
+                            
                             <div className="button-section">
                                 <button type="submit">Cadastrar</button>
-                                {/* <Link to={'/'}><a>Ir para login</a></Link> */}
                             </div>
                         </form>
                     </div>

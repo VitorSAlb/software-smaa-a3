@@ -5,9 +5,11 @@ import NovoRelatorioModal from '../NovoRelatorioModal/NovoRelatorioModal';
 import { Link } from "react-router-dom";
 import './Relatorio.css';
 import { AuthContext } from '../../context/auth';
+import api from '../../api/api';
 
 const Relatorio = ({ userId }) => {
     const { user } = useContext(AuthContext);
+
     const [relatorios, setRelatorios] = useState([]);
     const [selectedRelatorio, setSelectedRelatorio] = useState(null);
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -19,7 +21,7 @@ const Relatorio = ({ userId }) => {
                 const response = await axios.get('http://localhost:3000/relatorios');
                 setRelatorios(response.data);
             } catch (error) {
-                console.error('Erro ao buscar relatórios:', error);
+                
             }
         };
         fetchRelatorios();
@@ -37,6 +39,7 @@ const Relatorio = ({ userId }) => {
     const closeModal = () => {
         setModalIsOpen(false);
         setSelectedRelatorio(null);
+        window.location.reload()
     };
 
     const openNovoRelatorioModal = () => {
@@ -45,18 +48,21 @@ const Relatorio = ({ userId }) => {
 
     const closeNovoRelatorioModal = () => {
         setNovoRelatorioModalIsOpen(false);
+        window.location.reload()
     };
 
     const handleRelatorioCriado = () => {
-        const fetchRelatorios = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/relatorios');
-                setRelatorios(response.data);
-            } catch (error) {
-                console.error('Erro ao buscar relatórios:', error);
-            }
-        };
         fetchRelatorios();
+    };
+
+    const handleRelatorioExcluido = async (id) => {
+        try {
+            await api.delete(`/relatorios/${id}`);
+            closeModal(); // Fechar o modal após a exclusão
+            window.location.reload()
+        } catch (error) {
+            console.error('Erro ao excluir relatório:', error);
+        }
     };
 
     return (
@@ -82,6 +88,7 @@ const Relatorio = ({ userId }) => {
                         isOpen={modalIsOpen}
                         onRequestClose={closeModal}
                         relatorio={selectedRelatorio}
+                        onDelete={handleRelatorioExcluido} // Passando a função de exclusão como propriedade
                     />
                 )}
                 <NovoRelatorioModal
