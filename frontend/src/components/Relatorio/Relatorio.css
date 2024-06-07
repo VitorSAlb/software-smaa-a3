@@ -30,7 +30,10 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 20px;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 15px;
+    gap: 10px;
 }
 
 .card-rel {

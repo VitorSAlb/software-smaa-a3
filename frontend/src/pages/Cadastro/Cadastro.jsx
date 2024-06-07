@@ -1,17 +1,32 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import './Cadastro.css';
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/header/Header";
 import Footer from "../../components/Footer/Footer";
+import { AuthContext } from "../../context/auth";
 
 const Cadastro = () => {
+    const { user, getMe, instituicoes } = useContext(AuthContext);
+    const [userData, setUserData] = useState(null);
+
     const [nome, setNome] = useState('');
-    const [idade, setIdade] = useState('');
     const [telefone, setTelefone] = useState('');
     const [dataNascimento, setDataNascimento] = useState('');
     const [email, setEmail] = useState('');
-    const [tipoUsuario, setTipoUsuario] = useState(null); // Estado separado para cada tipo de usuário
+    const [tipoUsuario, setTipoUsuario] = useState(null);
+    const [instituicaoId, setInstituicaoId] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!userData && user) {
+                const data = await getMe();
+                setUserData(data);
+            }
+        };
+
+        fetchUserData();
+    }, [user, userData, getMe]);
 
     const handleCheckboxChange = (tipo) => {
         setTipoUsuario(tipo);
@@ -33,8 +48,17 @@ const Cadastro = () => {
             username: email,
             senha: 'abc123',
             status: true,
-            tipo_usuario: tipoUsuario
+            tipo_usuario: tipoUsuario,
         };
+
+        // Se o tipo de usuário for 'mediador' ou 'estudante', inclua o instituicaoId
+        if (tipoUsuario === 'mediador' || tipoUsuario === 'estudante') {
+            if (!instituicaoId) {
+                alert('Selecione a instituição');
+                return;
+            }
+            usuario.instituicao_id = instituicaoId;
+        }
 
         try {
             const response = await fetch('http://localhost:3000/usuarios', {
@@ -115,9 +139,15 @@ const Cadastro = () => {
                                     Estudante
                                 </label>
                             </div>
+                            <input
+                                value={instituicaoId}
+                                onChange={(e) => setInstituicaoId(e.target.value)}
+                                required
+                            />
+    
+                            
                             <div className="button-section">
                                 <button type="submit">Cadastrar</button>
-                                <Link to={'/'}><a>Ir para login</a></Link>
                             </div>
                         </form>
                     </div>

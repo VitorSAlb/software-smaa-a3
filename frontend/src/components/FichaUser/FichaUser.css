@@ -147,3 +147,25 @@
 .modal form button:hover {
     background-color: #45a049;
 }
+
+@media screen and (max-width: 720px) {
+    .ficha-img {
+        display: none;
+    }
+
+    .ficha-info {
+        width: 100%;
+    }
+
+    .ficha-section {
+        width: 100%;
+        padding: 0;
+    }
+
+    .ficha-container {
+        width: 100%;
+        padding: 0;
+    }
+
+
+}

@@ -6,6 +6,7 @@ import Loading from '../../components/Loading/Loading';
 import Relatorio from '../../components/Relatorio/Relatorio';
 import ModalEditarUsuario from '../../components/ModalEditUser/ModalEditarUsuario';
 import ModalEditarFichaEstudante from '../../components/ModalEditFichaEstudante/ModalEditarFichaEstudante';
+import './User.css'
 
 const UserProfile = () => {
     const { user, getMe } = useContext(AuthContext);
@@ -43,31 +44,48 @@ const UserProfile = () => {
         <div>
             <Header />
             <div className='padrao'>
-                <FichaUser 
-                    userData={userData}
-                    condEsp={userData.estudanteInfo?.condicao_especial || 'Não identificado'}
-                    temperamento={userData.estudanteInfo?.temperamento || 'Não identificado'}
-                    alergias={userData.estudanteInfo?.alergias || 'Não identificado'}
-                    hiperfocos={userData.estudanteInfo?.hiperfocos || 'Não identificado'}
-                    planoSaude={userData.estudanteInfo?.plano_saude || 'Não identificado'}
-                    token={user.token} // Adicionei o token aqui, se necessário
-                />
-                {user.tipo_usuario === 'estudante' && (
-                    <button onClick={handleEditFichaClick}>Editar Ficha</button>
+                <div className='UserProfile'>
+                    <div className='info-up'>
+                        <FichaUser 
+                            userData={userData}
+                            condEsp={userData.estudanteInfo?.condicao_especial || 'Não identificado'}
+                            temperamento={userData.estudanteInfo?.temperamento || 'Não identificado'}
+                            alergias={userData.estudanteInfo?.alergias || 'Não identificado'}
+                            hiperfocos={userData.estudanteInfo?.hiperfocos || 'Não identificado'}
+                            planoSaude={userData.estudanteInfo?.plano_saude || 'Não identificado'}
+                            token={user.token}
+                        />
+                        
+                    </div>
+                
+
+                    <div className='btn-up'>
+                        {user.tipo_usuario === 'estudante' && (
+                            <button onClick={handleEditFichaClick}>Editar Ficha</button>
+                        )}
+                        <button onClick={handleEditUserClick}>Editar Dados</button>
+                    </div>
+                
+                </div>
+                
+                {user && (user.tipo_usuario === 'mediador' || user.tipo_usuario === 'estudante') && (
+                    <>
+                        <Relatorio userId={userData.id} />
+                    </>
                 )}
-                <button onClick={handleEditUserClick}>Editar Dados</button>
-                <Relatorio userId={userData.id} />
+                
+
             </div>
             {showEditUserModal && (
                 <ModalEditarUsuario
-                    isOpen={showEditUserModal} // Adicionei isOpen aqui
+                    isOpen={showEditUserModal}
                     userData={userData}
                     handleClose={handleCloseModals}
                 />
             )}
             {showEditFichaModal && (
                 <ModalEditarFichaEstudante
-                    isOpen={showEditFichaModal} // Adicionei isOpen aqui
+                    isOpen={showEditFichaModal} 
                     userData={userData}
                     handleClose={handleCloseModals}
                 />

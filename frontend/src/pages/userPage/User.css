@@ -1,0 +1,44 @@
+.UserProfile {
+    width: 80%;
+
+    /* border: 1px solid red; */
+    display: flex;
+    flex-direction: row;
+}
+
+.info-up {
+    width: 90%;
+}
+
+.btn-up {
+    padding: 20px;
+}
+
+.btn-up button {
+    width: 100px;
+    background-color: #055902;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.btn-up button:hover {
+    opacity: 0.7;
+    border: none;
+}
+
+@media screen and (max-width: 720px) {
+    .UserProfile {
+        width: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .ficha-section {
+        width: 100%;
+    }
+}

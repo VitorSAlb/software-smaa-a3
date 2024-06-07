@@ -3,10 +3,10 @@
 describe('Teste Funcional de Login', () => {
     it('Login com dados válidos', () => {
         cy.visit("http://localhost:5173/")
-        cy.get('[placeholder="Insira seu email"]').type("estudante@example.com")
+        cy.get('[placeholder="Insira seu email"]').type("mediador@example.com")
         cy.get('[type="password"]').type("senha123")
         cy.get('button').click()
-        cy.get('[href="/"] > a > li').should('contain', 'Home')
+        cy.get('ul > :nth-child(1) > a').should('contain', 'Home')
     });
 
     it('Login com senha incorreta', () => {
@@ -19,7 +19,7 @@ describe('Teste Funcional de Login', () => {
           });
         }).as('loginRequest');
         cy.visit("http://localhost:5173/");
-        cy.get('[placeholder="Insira seu email"]').type("estudante@example.com");
+        cy.get('[placeholder="Insira seu email"]').type("mediador@example.com");
         cy.get('[type="password"]').type("senhaErrada");
         cy.get('button').click();
         cy.wait('@loginRequest');

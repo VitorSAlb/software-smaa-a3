@@ -1,0 +1,45 @@
+.btn-modal {
+    width: 100%;
+    margin-bottom: 19px;
+}
+
+.row-label {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.row-label label input {
+    width: 100%;
+}
+
+.input-max {
+    width: 100%;
+}
+
+.red {
+    background-color: red;
+}
+
+.red:hover{
+    background-color: brown;
+}
+
+.ModalContent {
+    width: fit-content;
+    height: 70%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .ModalOverlay {
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }

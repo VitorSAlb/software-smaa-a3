@@ -17,6 +17,7 @@ const ReportForm = () => {
                 mediador_id: mediadorId
             });
             setMessage('Relatório criado com sucesso!');
+            window.location.reload();
         } catch (error) {
             setMessage('Erro ao criar relatório: ' + error.response.data.error);
         }

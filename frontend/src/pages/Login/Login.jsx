@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import './Login.css';
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/auth"; // Ajuste o caminho conforme necessário
@@ -50,7 +50,7 @@ const Login = () => {
 
                     <div className="button-section">
                         <button onClick={handleLogin}>Entrar</button>
-                        <Link to={'/cadastro'}>Ir para cadastro</Link>
+                        {/* <Link to={'/cadastro'}>Ir para cadastro</Link> */}
                     </div>
                 </div>
             </div>

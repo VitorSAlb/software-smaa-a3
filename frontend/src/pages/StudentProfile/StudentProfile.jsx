@@ -41,7 +41,7 @@ const StudentProfile = () => {
                 />
                 <Relatorio userId={studentData.id} />
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </div>
     );
 };
