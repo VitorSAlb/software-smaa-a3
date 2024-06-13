@@ -220,12 +220,12 @@ app.post('/usuarios', async (req, res) => {
         if (tipo_usuario === 'instituicao') {
             await db.run(`INSERT INTO instituicoes (usuario_id) VALUES (?)`, [usuarioId.id]);
         } else if (tipo_usuario === 'mediador') {
-            await db.run(`INSERT INTO mediadores (usuario_id, instituicao_id) VALUES (?, ?)`, [usuarioId.id, null]); // Adicione null ou um valor padrão para instituicao_id
+            await db.run(`INSERT INTO mediadores (usuario_id, instituicao_id) VALUES (?, ?)`, [usuarioId.id, 1]); // Adicione null ou um valor padrão para instituicao_id
         } else if (tipo_usuario === 'estudante') {
             await db.run(`
                 INSERT INTO estudantes (usuario_id, instituicao_id, mediador_id, turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude)
                 VALUES (?, ?, ?, '', '', '', '', '', '')
-            `, [usuarioId.id, null, null]); // Adicione null ou valores padrão para instituicao_id e mediador_id
+            `, [usuarioId.id, 1, null]); // Adicione null ou valores padrão para instituicao_id e mediador_id
         }
 
         res.status(201).json({ message: 'Usuário adicionado com sucesso!' });
@@ -263,7 +263,7 @@ app.post('/mediadores', async (req, res) => {
         await db.run(`
             INSERT INTO mediadores (usuario_id, instituicao_id)
             VALUES (?, ?)
-        `, [mediadorId.id, instituicao_id]);
+        `, [mediadorId.id, 1]);
 
         res.status(201).json({ message: 'Mediador adicionado com sucesso!' });
     } catch (error) {

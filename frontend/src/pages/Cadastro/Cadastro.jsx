@@ -6,7 +6,7 @@ import Footer from "../../components/Footer/Footer";
 import { AuthContext } from "../../context/auth";
 
 const Cadastro = () => {
-    const { user, getMe, instituicoes } = useContext(AuthContext);
+    const { user, getMe } = useContext(AuthContext);
     const [userData, setUserData] = useState(null);
 
     const [nome, setNome] = useState('');
@@ -51,14 +51,6 @@ const Cadastro = () => {
             tipo_usuario: tipoUsuario,
         };
 
-        // Se o tipo de usuário for 'mediador' ou 'estudante', inclua o instituicaoId
-        if (tipoUsuario === 'mediador' || tipoUsuario === 'estudante') {
-            if (!instituicaoId) {
-                alert('Selecione a instituição');
-                return;
-            }
-            usuario.instituicao_id = instituicaoId;
-        }
 
         try {
             const response = await fetch('http://localhost:3000/usuarios', {
@@ -139,11 +131,6 @@ const Cadastro = () => {
                                     Estudante
                                 </label>
                             </div>
-                            <input
-                                value={instituicaoId}
-                                onChange={(e) => setInstituicaoId(e.target.value)}
-                                required
-                            />
     
                             
                             <div className="button-section">
