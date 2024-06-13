@@ -5,8 +5,8 @@ import nodemailer from 'nodemailer';
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-        user: 'your-email@gmail.com',
-        pass: 'your-email-password'
+        user: 'lucaslppedroza2004@gmail.com',
+        pass: '@L2u0c0a4s.'
     }
 });
 
@@ -22,7 +22,7 @@ export async function sendReports() {
 
     for (const estudante of estudantes) {
         const mailOptions = {
-            from: 'your-email@gmail.com',
+            from: 'lucaslppedroza2004@gmail.com',
             to: estudante.email,
             subject: 'Relatório Diário',
             text: estudante.anotacoes
