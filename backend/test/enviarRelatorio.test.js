@@ -27,7 +27,7 @@ describe('sendReports', () => {
 
         // Verifica se o nodemailer foi chamado com os parâmetros corretos
         expect(require('nodemailer').createTransport().sendMail).toHaveBeenCalledWith({
-            from: 'lucaslppedroza2004@gmail.com',
+            from: 'sapasoftware.edu@gmail.com',
             to: 'luluquinhas090@gmail.com',
             subject: 'Relatório Diário',
             text: 'Teste de Envio 1'
