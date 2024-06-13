@@ -6,7 +6,7 @@ import userIcon from '../../assets/user-icon.svg';
 import listIcon from '../../assets/list-user-icon.svg';
 import relaIcon from '../../assets/relatorio-icon.svg';
 import Footer from "../../components/Footer/Footer";
-import NovoRelatorioModal from "../../components/NovoRelatorioModal/NovoRelatorioModal"; // Certifique-se de usar o caminho correto
+import NovoRelatorioModal from "../../components/NovoRelatorioModal/NovoRelatorioModal"; 
 
 import { AuthContext } from '../../context/auth';
 

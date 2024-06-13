@@ -13,7 +13,6 @@ describe('PUT /estudantes/:id', () => {
 
   beforeAll(async () => {
     const db = await openDB();
-    // Crie as tabelas de teste
     await db.exec(`CREATE TABLE IF NOT EXISTS usuarios (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       nome TEXT,
@@ -39,11 +38,9 @@ describe('PUT /estudantes/:id', () => {
       FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     )`);
 
-    // Limpar tabelas de usuários e estudantes
     await db.run(`DELETE FROM estudantes`);
     await db.run(`DELETE FROM usuarios`);
 
-    // Inserir um usuário e estudante de teste
     const result = await db.run(`
       INSERT INTO usuarios (nome, data_nascimento, telefone, foto, email, username, senha, status, tipo_usuario)
       VALUES ('Estudante Teste', '2000-01-01', '1234567890', 'url_da_foto', 'estudante@example.com', 'estudanteteste', 'SenhaSegura123!', 'ativo', 'estudante')
@@ -72,8 +69,8 @@ describe('PUT /estudantes/:id', () => {
   
     const response = await request(app)
       .put(`/estudantes/${estudanteId}`)
-      .set('Authorization', `Bearer ${token}`) // Verifique se o token JWT está sendo passado corretamente
-      .set('user-type', 'estudante') // Simula o tipo de usuário como estudante no ambiente de teste
+      .set('Authorization', `Bearer ${token}`) 
+      .set('user-type', 'estudante') 
       .send(novosDados);
   
     expect(response.status).toBe(200);
@@ -91,9 +88,9 @@ describe('PUT /estudantes/:id', () => {
     };
   
     const response = await request(app)
-      .put('/estudantes/9999') // ID inexistente
+      .put('/estudantes/9999') 
       .set('Authorization', `Bearer ${token}`)
-      .set('user-type', 'estudante') // Simula o tipo de usuário como estudante no ambiente de teste
+      .set('user-type', 'estudante') 
       .send(novosDados);
   
     expect(response.status).toBe(404);

@@ -68,11 +68,10 @@ export async function createTables() {
 export async function insertUsers() {
     const db = await openDB();
 
-    // Verificar se já existem usuários na tabela
+
     const count = await db.get(`SELECT COUNT(*) AS count FROM usuarios`);
     
     if (count.count === 0) {
-        // Inserir Instituição
         await db.run(`
             INSERT INTO usuarios (nome, data_nascimento, telefone, foto, email, username, senha, status, tipo_usuario)
             VALUES ('Instituição Exemplo', '2000-01-01', '999999999', NULL, 'instituicao@example.com', 'instituicao', 'senha123', TRUE, 'instituicao')
@@ -87,7 +86,6 @@ export async function insertUsers() {
 
         const instituicaoId = await db.get(`SELECT last_insert_rowid() AS id`);
 
-        // Inserir Mediador
         await db.run(`
             INSERT INTO usuarios (nome, data_nascimento, telefone, foto, email, username, senha, status, tipo_usuario)
             VALUES ('Mediador Exemplo', '1990-05-15', '888888888', NULL, 'mediador@example.com', 'mediador', 'senha123', TRUE, 'mediador')
@@ -100,7 +98,6 @@ export async function insertUsers() {
             VALUES (?, ?)
         `, [mediadorId.id, instituicaoId.id]);
 
-        // Inserir Estudante
         await db.run(`
             INSERT INTO usuarios (nome, data_nascimento, telefone, foto, email, username, senha, status, tipo_usuario)
             VALUES ('Estudante Exemplo', '2005-09-10', '777777777', NULL, 'estudante@example.com', 'estudante', 'senha123', TRUE, 'estudante')
@@ -120,7 +117,6 @@ export async function insertUsers() {
 }
 
 // ------------------------------------------------- MÉTODOS POST -------------------------------------------------
-// função login para verificar email e senha de usuario
 app.post('/login', async (req, res) => {
     const { email, senha } = req.body;
     const db = await openDB();
@@ -142,7 +138,6 @@ app.post('/login', async (req, res) => {
             return;
         }
 
-        // Geração do token JWT dentro do bloco de código onde 'usuario' está definida
         const token = jwt.sign({ userId: usuario.id, userType: usuario.tipo_usuario }, 'chave_secreta', { expiresIn: '1h' });
         res.status(200).json({ message: 'Login bem-sucedido!', token });
     } catch (error) {
@@ -150,7 +145,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Middleware para verificar o token e definir o usuário no request
+
 export const verifyToken = (req, res, next) => {
     if (process.env.NODE_ENV === 'test') {
         const userType = req.headers['user-type'];
@@ -189,7 +184,6 @@ const verifyMediator = (req, res, next) => {
 };
 
 
-// Função para adicionar um novo usuário
 app.post('/usuarios', async (req, res) => {
     const { nome, data_nascimento, telefone, foto, email, username, senha, status, tipo_usuario } = req.body;
     const db = await openDB();
@@ -208,7 +202,6 @@ app.post('/usuarios', async (req, res) => {
             return;
         }
 
-        // Inserir na tabela de usuários
         await db.run(`
             INSERT INTO usuarios (nome, data_nascimento, telefone, foto, email, username, senha, status, tipo_usuario)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -216,16 +209,15 @@ app.post('/usuarios', async (req, res) => {
 
         const usuarioId = await db.get(`SELECT last_insert_rowid() AS id`);
 
-        // Inserir nas tabelas específicas com dados vazios
         if (tipo_usuario === 'instituicao') {
             await db.run(`INSERT INTO instituicoes (usuario_id) VALUES (?)`, [usuarioId.id]);
         } else if (tipo_usuario === 'mediador') {
-            await db.run(`INSERT INTO mediadores (usuario_id, instituicao_id) VALUES (?, ?)`, [usuarioId.id, 1]); // Adicione null ou um valor padrão para instituicao_id
+            await db.run(`INSERT INTO mediadores (usuario_id, instituicao_id) VALUES (?, ?)`, [usuarioId.id, 1]); 
         } else if (tipo_usuario === 'estudante') {
             await db.run(`
                 INSERT INTO estudantes (usuario_id, instituicao_id, mediador_id, turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude)
                 VALUES (?, ?, ?, '', '', '', '', '', '')
-            `, [usuarioId.id, 1, null]); // Adicione null ou valores padrão para instituicao_id e mediador_id
+            `, [usuarioId.id, 1, null]); 
         }
 
         res.status(201).json({ message: 'Usuário adicionado com sucesso!' });
@@ -234,7 +226,6 @@ app.post('/usuarios', async (req, res) => {
     }
 });
 
-// Função para adicionar um novo mediador
 app.post('/mediadores', async (req, res) => {
     const { nome, data_nascimento, telefone, foto, email, username, senha, status, instituicao_id } = req.body;
     const db = await openDB();
@@ -271,7 +262,6 @@ app.post('/mediadores', async (req, res) => {
     }
 });
 
-// Função para adicionar um novo estudante
 app.post('/estudantes', async (req, res) => {
     const { nome, data_nascimento, telefone, foto, email, username, senha, status, instituicao_id, mediador_id, turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude } = req.body;
     const db = await openDB();
@@ -371,7 +361,6 @@ app.get('/me', verifyToken, async (req, res) => {
 
 
 
-// função para retornar um usuario especifico por ID
 app.get('/usuarios/:id', async (req, res) => {
     const db = await openDB();
     try {
@@ -391,7 +380,6 @@ app.get('/usuarios/:id', async (req, res) => {
     }
 });
 
-// função para retornar todos os usuarios
 app.get('/usuarios', async (req, res) => {
     const db = await openDB();
     try {
@@ -405,7 +393,7 @@ app.get('/usuarios', async (req, res) => {
     }
 });
 
-// Função para retornar um estudante específico
+
 app.get('/estudantes/:id', async (req, res) => {
     const db = await openDB();
     const estudante = await db.get(`
@@ -421,7 +409,6 @@ app.get('/estudantes/:id', async (req, res) => {
     }
 });
 
-// Função para retornar todos os estudantes
 app.get('/estudantes', async (req, res) => {
     const db = await openDB();
     const estudantes = await db.all(`
@@ -436,12 +423,10 @@ app.get('/estudantes', async (req, res) => {
 app.get('/mediadores/:mediador_id/estudantes', verifyToken, async (req, res) => {
     const mediador_id = req.params.mediador_id;
 
-    // Verificar se o usuário autenticado é um mediador
     if (req.user.userType !== 'mediador') {
         return res.status(403).json({ error: 'Acesso negado. Somente mediadores podem acessar esta informação.' });
     }
 
-    // Verificar se o mediador autenticado está tentando acessar seus próprios estudantes
     if (req.user.userId !== parseInt(mediador_id)) {
         return res.status(403).json({ error: 'Acesso negado. Você só pode acessar seus próprios estudantes.' });
     }
@@ -462,7 +447,6 @@ app.get('/mediadores/:mediador_id/estudantes', verifyToken, async (req, res) => 
     }
 });
 
-// Função para retornar um mediador específico
 app.get('/mediadores/:id', async (req, res) => {
     const db = await openDB();
     const mediador = await db.get(`
@@ -478,7 +462,6 @@ app.get('/mediadores/:id', async (req, res) => {
     }
 });
 
-// Função para retornar todos os mediadores
 app.get('/mediadores', async (req, res) => {
     const db = await openDB();
     const mediadores = await db.all(`
@@ -545,7 +528,6 @@ app.get('/usuarios/instituicao/:instituicaoId', verifyToken, async (req, res) =>
 });
 
 
-// Função para retornar uma instituição específica
 app.get('/instituicoes/:id', async (req, res) => {
     const db = await openDB();
     const instituicao = await db.get(`
@@ -561,7 +543,6 @@ app.get('/instituicoes/:id', async (req, res) => {
     }
 });
 
-// Função para retornar todas as instituições
 app.get('/instituicoes', async (req, res) => {
     const db = await openDB();
     const instituicoes = await db.all(`
@@ -578,7 +559,6 @@ app.get('/relatorios/:id', async (req, res) => {
     const db = await openDB();
 
     try {
-        // Obter o relatório
         const relatorio = await db.get(`
             SELECT *
             FROM relatorios
@@ -614,20 +594,17 @@ app.get('/relatorios', async (req, res) => {
 });
 
 app.get('/relatorios/estudante/:id', verifyToken, async (req, res) => {
-    const { id } = req.params; // ID do estudante
+    const { id } = req.params; 
     const db = await openDB();
 
     try {
-        // Obtenha os dados do estudante
         const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [id]);
 
-        // Verifique se o estudante existe
         if (!estudante) {
             res.status(404).json({ error: "Estudante não encontrado." });
             return;
         }
 
-        // Verifique se o usuário logado é o estudante ou o mediador associado
         if (req.user.userType === 'estudante' && req.user.userId !== estudante.usuario_id) {
             res.status(403).json({ error: 'Acesso negado. Você só pode acessar seus próprios relatórios.' });
             return;
@@ -636,7 +613,6 @@ app.get('/relatorios/estudante/:id', verifyToken, async (req, res) => {
             return;
         }
 
-        // Obtenha os relatórios do estudante
         const relatorios = await db.all(`SELECT * FROM relatorios WHERE estudante_id = ?`, [id]);
 
         res.json(relatorios);
@@ -645,12 +621,11 @@ app.get('/relatorios/estudante/:id', verifyToken, async (req, res) => {
     }
 });
 // ------------------------------------------------- MÉTODOS PUT -------------------------------------------------
-// Função para atualizar atributos gerais de um usuário
 app.put('/usuarios/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const { nome, data_nascimento, telefone, foto, email, username, senha, status } = req.body;
     const db = await openDB();
-    const userId = req.user.userId; // Supondo que o ID do usuário esteja disponível no token
+    const userId = req.user.userId; 
 
     try {
         const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [id]);
@@ -675,14 +650,12 @@ app.put('/usuarios/:id', verifyToken, async (req, res) => {
     }
 });
 
-// Função para atualizar atributos específicos de um estudante
 app.put('/estudantes/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const { turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude } = req.body;
     const db = await openDB();
 
     try {
-        // Verificar se o estudante existe
         const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [id]);
         
         if (!estudante) {
@@ -690,7 +663,6 @@ app.put('/estudantes/:id', verifyToken, async (req, res) => {
             return;
         }
 
-        // Atualizar dados na tabela `estudantes`
         await db.run(`
             UPDATE estudantes
             SET turma = ?, temperamento = ?, condicao_especial = ?, metodos_tecnicas = ?, alergias = ?, plano_saude = ?
@@ -716,7 +688,6 @@ app.put('/mediadores/:id/especifico', verifyToken, verifyMediator, async (req, r
             return;
         }
 
-        // Verifica se o mediador que está tentando editar é o mesmo que está logado
         if (req.user.userId !== mediador.usuario_id) {
             res.status(403).json({ error: 'Acesso negado. Você só pode editar seus próprios dados.' });
             return;
@@ -734,7 +705,6 @@ app.put('/mediadores/:id/especifico', verifyToken, verifyMediator, async (req, r
     }
 });
 
-// Função para atualizar atributos específicos de uma instituição
 app.put('/instituicoes/:id/especifico', verifyToken, async (req, res) => {
     const { id } = req.params;
     const db = await openDB();
@@ -747,13 +717,11 @@ app.put('/instituicoes/:id/especifico', verifyToken, async (req, res) => {
             return;
         }
 
-        // Verifica se a instituição que está tentando editar é a mesma que está logada
         if (req.user.userId !== instituicao.usuario_id) {
             res.status(403).json({ error: 'Acesso negado. Você só pode editar seus próprios dados.' });
             return;
         }
 
-        // Não há dados específicos da instituição para atualizar neste exemplo, mas você pode adicionar campos conforme necessário
 
         res.status(200).json({ message: 'Dados específicos da instituição atualizados com sucesso!' });
     } catch (error) {
@@ -766,28 +734,24 @@ app.put('/estudantes/:estudanteId/atribuir-mediador/:mediadorId', verifyToken, a
     const db = await openDB();
 
     try {
-        // Verificar se o usuário é do tipo instituição
         const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [req.user.userId]);
         if (!usuario || usuario.tipo_usuario !== 'instituicao') {
             res.status(403).json({ error: 'Acesso negado. Somente instituições podem executar esta ação.' });
             return;
         }
 
-        // Verificar se o estudante existe
         const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [estudanteId]);
         if (!estudante) {
             res.status(404).json({ error: 'Estudante não encontrado.' });
             return;
         }
 
-        // Verificar se o mediador existe
         const mediador = await db.get(`SELECT * FROM mediadores WHERE usuario_id = ?`, [mediadorId]);
         if (!mediador) {
             res.status(404).json({ error: 'Mediador não encontrado.' });
             return;
         }
 
-        // Atribuir mediador ao estudante
         await db.run(`
             UPDATE estudantes
             SET mediador_id = ?
@@ -805,13 +769,12 @@ app.put('/estudantes/:estudanteId/atribuir-mediador/:mediadorId', verifyToken, a
     const db = await openDB();
 
     try {
-        // Verificar se o usuário é do tipo instituição
+
         const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [req.user.userId]);
         if (!usuario || usuario.tipo_usuario !== 'instituicao') {
             return res.status(403).json({ error: 'Acesso negado. Somente instituições podem executar esta ação.' });
         }
 
-        // Verificar se o estudante e o mediador existem
         const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [estudanteId]);
         const mediador = await db.get(`SELECT * FROM mediadores WHERE usuario_id = ?`, [mediadorId]);
 
@@ -823,7 +786,6 @@ app.put('/estudantes/:estudanteId/atribuir-mediador/:mediadorId', verifyToken, a
             return res.status(404).json({ error: 'Mediador não encontrado.' });
         }
 
-        // Atualizar o mediador do estudante
         await db.run(`UPDATE estudantes SET mediador_id = ? WHERE usuario_id = ?`, [mediadorId, estudanteId]);
 
         res.status(200).json({ message: 'Estudante alocado ao mediador com sucesso!' });
@@ -833,7 +795,6 @@ app.put('/estudantes/:estudanteId/atribuir-mediador/:mediadorId', verifyToken, a
 });
 
 // ------------------------------------------------- MÉTODOS DELETE -------------------------------------------------
-// Funçãoo para deletar um usuario especifico por ID
 app.delete('/usuarios/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const db = await openDB();
@@ -846,13 +807,11 @@ app.delete('/usuarios/:id', verifyToken, async (req, res) => {
             return;
         }
 
-        // Verifica se o usuário que está tentando deletar é o mesmo que está logado ou se é uma instituição
         if (req.user.userId !== usuario.id && req.user.userType !== 'instituicao') {
             res.status(403).json({ error: 'Acesso negado. Você só pode deletar seus próprios dados ou ser uma instituição.' });
             return;
         }
 
-        // Deletar dados específicos de cada tipo de usuário
         if (usuario.tipo_usuario === 'estudante') {
             await db.run(`DELETE FROM estudantes WHERE usuario_id = ?`, [id]);
         } else if (usuario.tipo_usuario === 'mediador') {
@@ -861,7 +820,6 @@ app.delete('/usuarios/:id', verifyToken, async (req, res) => {
             await db.run(`DELETE FROM instituicoes WHERE usuario_id = ?`, [id]);
         }
 
-        // Deletar o usuário da tabela 'usuarios'
         await db.run(`DELETE FROM usuarios WHERE id = ?`, [id]);
 
         res.status(200).json({ message: 'Usuário deletado com sucesso!' });
@@ -883,13 +841,12 @@ app.delete('/relatorios/:id', verifyToken, async (req, res) => {
             return;
         }
 
-        // Verifica se o usuário que está tentando deletar é o mediador ou estudante do relatório
         if (req.user.userId !== relatorio.mediador_id && req.user.userId !== relatorio.estudante_id) {
             res.status(403).json({ error: 'Acesso negado. Você só pode deletar seus próprios relatórios.' });
             return;
         }
 
-        // Deletar o relatório da tabela 'relatorios'
+
         await db.run(`DELETE FROM relatorios WHERE id = ?`, [id]);
 
         res.status(200).json({ message: 'Relatório deletado com sucesso!' });
@@ -903,19 +860,16 @@ app.delete('/usuarios/:id', verifyToken, async (req, res) => {
     const db = await openDB();
 
     try {
-        // Verificar se o usuário é do tipo instituição
         const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [req.user.userId]);
         if (!usuario || usuario.tipo_usuario !== 'instituicao') {
             return res.status(403).json({ error: 'Acesso negado. Somente instituições podem executar esta ação.' });
         }
 
-        // Verificar se o usuário a ser deletado existe
         const usuarioToDelete = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [id]);
         if (!usuarioToDelete) {
             return res.status(404).json({ error: 'Usuário não encontrado.' });
         }
 
-        // Deletar o usuário das tabelas específicas
         if (usuarioToDelete.tipo_usuario === 'estudante') {
             await db.run(`DELETE FROM estudantes WHERE usuario_id = ?`, [id]);
         } else if (usuarioToDelete.tipo_usuario === 'mediador') {
@@ -924,7 +878,6 @@ app.delete('/usuarios/:id', verifyToken, async (req, res) => {
             await db.run(`DELETE FROM instituicoes WHERE usuario_id = ?`, [id]);
         }
 
-        // Deletar o usuário da tabela principal
         await db.run(`DELETE FROM usuarios WHERE id = ?`, [id]);
 
         res.status(200).json({ message: 'Usuário deletado com sucesso!' });

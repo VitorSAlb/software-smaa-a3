@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const userToken = localStorage.getItem('user_token');
         if (userToken) {
-            console.log('Token encontrado no localStorage:', userToken);  // Adicionando log
+            console.log('Token encontrado no localStorage:', userToken);  
             api.defaults.headers.Authorization = `Bearer ${userToken}`;
             setUser({ token: userToken }); 
         }
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
             const response = await api.post('/login', { email, senha: password });
             const { data } = response;
     
-            console.log('Token recebido após login:', data.token);  // Adicionando log
+            console.log('Token recebido após login:', data.token);  
             localStorage.setItem('user_token', data.token);
             api.defaults.headers.Authorization = `Bearer ${data.token}`;
             setUser({ email, token: data.token });

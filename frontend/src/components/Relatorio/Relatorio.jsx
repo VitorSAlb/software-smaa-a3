@@ -88,7 +88,7 @@ const Relatorio = ({ userId }) => {
                         isOpen={modalIsOpen}
                         onRequestClose={closeModal}
                         relatorio={selectedRelatorio}
-                        onDelete={handleRelatorioExcluido} // Passando a função de exclusão como propriedade
+                        onDelete={handleRelatorioExcluido} 
                     />
                 )}
                 <NovoRelatorioModal

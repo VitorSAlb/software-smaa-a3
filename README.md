@@ -33,4 +33,3 @@ npm install commitizen -D -g
 
 git cz:
 > Faz os commits de acordo com o Conventional Commits
-

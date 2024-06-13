@@ -7,7 +7,6 @@ const api = axios.create({
     }
 });
 
-// Interceptor para adicionar o token a cada requisição
 api.interceptors.request.use(config => {
     const token = localStorage.getItem('user_token');
     if (token) {

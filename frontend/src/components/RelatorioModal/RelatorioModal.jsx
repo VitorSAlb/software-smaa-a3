@@ -4,7 +4,6 @@ import './RelatorioModal.css'
 
 Modal.setAppElement('#root');
 
-// No componente RelatorioModal.js
 
 const RelatorioModal = ({ isOpen, onRequestClose, relatorio, onDelete, user }) => {
 

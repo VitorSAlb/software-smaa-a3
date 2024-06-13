@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import './Header.css';
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/auth";
-import api from "../../api/api"; // Importe a configuração do axios
+import api from "../../api/api"; 
 import Loading from "../Loading/Loading";
 
 const Header = (props) => {
@@ -12,7 +12,7 @@ const Header = (props) => {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            if (!userData && user) { // Adiciona uma verificação para evitar chamadas repetitivas
+            if (!userData && user) { 
                 const data = await getMe();
                 setUserData(data);
                 setLoading(false);
@@ -20,12 +20,12 @@ const Header = (props) => {
         };
 
         fetchUserData();
-    }, [user, userData, getMe]); // Adiciona userData como dependência para garantir que não entre em loop
+    }, [user, userData, getMe]); 
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setLoading(false);
-        }, 300); // Pequeno atraso para transição suave
+        }, 300); 
 
         return () => clearTimeout(timer);
     }, [userData]);

@@ -95,7 +95,7 @@ const StudentList = () => {
                                 {allUser.map(student => (
                                     <li key={student.id}>
                                         <div className="student-card">
-                                            <Link to={`/perfil/${student.id}`} className="student-link"> {/* Corrigido aqui */}
+                                            <Link to={`/perfil/${student.id}`} className="student-link"> 
                                                 <div>
                                                     <p><strong>Nome:</strong> {student.nome}</p>
                                                     <p><strong>Email:</strong> {student.email}</p>
@@ -135,7 +135,7 @@ const StudentList = () => {
                                 {students.map(student => (
                                     <li key={student.id}>
                                         <div className="student-card">
-                                            <Link to={`/perfil/${student.id}`} className="student-link"> {/* Corrigido aqui */}
+                                            <Link to={`/perfil/${student.id}`} className="student-link"> 
                                                 <div>
                                                     <p><strong>Nome:</strong> {student.nome}</p>
                                                     <p><strong>Email:</strong> {student.email}</p>
