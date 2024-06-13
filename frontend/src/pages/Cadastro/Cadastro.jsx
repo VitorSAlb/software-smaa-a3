@@ -14,7 +14,7 @@ const Cadastro = () => {
     const [dataNascimento, setDataNascimento] = useState('');
     const [email, setEmail] = useState('');
     const [tipoUsuario, setTipoUsuario] = useState(null);
-    const [instituicaoId, setInstituicaoId] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -35,8 +35,8 @@ const Cadastro = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!tipoUsuario) {
-            alert('Selecione o tipo de usuário');
+        if (!nome || !telefone || !dataNascimento || !email || !tipoUsuario) {
+            setErrorMessage('Por favor, preencha todos os campos.');
             return;
         }
 
@@ -50,7 +50,6 @@ const Cadastro = () => {
             status: true,
             tipo_usuario: tipoUsuario,
         };
-
 
         try {
             const response = await fetch('http://localhost:3000/usuarios', {
@@ -66,11 +65,15 @@ const Cadastro = () => {
                 navigate('/');
             } else {
                 const errorData = await response.json();
-                alert(`Erro no cadastro: ${errorData.error}`);
+                if (errorData.error.includes("Email already exists")) {
+                    setErrorMessage('O email já está em uso. Por favor, use um email diferente.');
+                } else {
+                    setErrorMessage(`Erro no cadastro: ${errorData.error}`);
+                }
             }
         } catch (error) {
             console.error('Erro ao cadastrar:', error);
-            alert('Erro ao cadastrar. Tente novamente mais tarde.');
+            setErrorMessage('Erro ao cadastrar. Tente novamente mais tarde.');
         }
     };
 
@@ -85,6 +88,7 @@ const Cadastro = () => {
 
                     <div className="form-container">
                         <form onSubmit={handleSubmit} className="input-section">
+                            {errorMessage && <div className="error-message">{errorMessage}</div>}
                             <input 
                                 type="text" 
                                 placeholder="Insira o nome" 
