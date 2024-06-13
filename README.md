@@ -3,8 +3,14 @@
 git commit
 > para realizar o commit utilizando o commitizen e o husky
 
+npm i
+> instalar as dependencias na pasta raiz
+
+npm run baixar
+> instalar as dependencias do backend e frontend
+
 npm run dev:
-> Na pasta frontend, você consiguira executar este codigo para abrir a versão de desenvolvedor do vite
+> o "npm run dev" deve ser executado tando no diretorio do backend e no diretorio do frontend
 
 npx cypress open:
 > Abrir o cypress
