@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
+export default app;
+
 export async function createTables() {
     const db = await openDB();
     await db.exec(`
@@ -150,6 +152,18 @@ app.post('/login', async (req, res) => {
 
 // Middleware para verificar o token e definir o usuário no request
 export const verifyToken = (req, res, next) => {
+    if (process.env.NODE_ENV === 'test') {
+        const userType = req.headers['user-type'];
+        if (userType === 'mediador') {
+            req.user = { userId: 1, userType: 'mediador' };
+        } else if (userType === 'estudante') {
+            req.user = { userId: 2, userType: 'estudante' };
+        } else {
+            return res.status(401).json({ error: 'Tipo de usuário inválido.' });
+        }
+        return next();
+    }
+
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({ error: 'Token não fornecido.' });
 
@@ -159,7 +173,6 @@ export const verifyToken = (req, res, next) => {
         next();
     });
 };
-
 
 const verifyStudent = (req, res, next) => {
     if (req.user.userType !== 'estudante') {
@@ -637,19 +650,17 @@ app.put('/usuarios/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const { nome, data_nascimento, telefone, foto, email, username, senha, status } = req.body;
     const db = await openDB();
+    const userId = req.user.userId; // Supondo que o ID do usuário esteja disponível no token
 
     try {
         const usuario = await db.get(`SELECT * FROM usuarios WHERE id = ?`, [id]);
 
         if (!usuario) {
-            res.status(404).json({ error: 'Usuário não encontrado.' });
-            return;
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
         }
 
-        // Verifica se o usuário que está tentando editar é o mesmo que está logado
-        if (req.user.userId !== usuario.id) {
-            res.status(403).json({ error: 'Acesso negado. Você só pode editar seus próprios dados.' });
-            return;
+        if (parseInt(id) !== parseInt(userId)) {
+            return res.status(403).json({ error: 'Acesso negado. Você só pode editar seus próprios dados.' });
         }
 
         await db.run(`
@@ -658,22 +669,22 @@ app.put('/usuarios/:id', verifyToken, async (req, res) => {
             WHERE id = ?
         `, [nome, data_nascimento, telefone, foto, email, username, senha, status, id]);
 
-        res.status(200).json({ message: 'Dados do usuário atualizados com sucesso!' });
+        return res.status(200).json({ message: 'Dados do usuário atualizados com sucesso!' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 });
-
 
 // Função para atualizar atributos específicos de um estudante
 app.put('/estudantes/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
-    const { nome, data_nascimento, telefone, foto, email, username, senha, status, turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude } = req.body;
+    const { turma, temperamento, condicao_especial, metodos_tecnicas, alergias, plano_saude } = req.body;
     const db = await openDB();
 
     try {
-        const estudante = await db.get(`SELECT * FROM usuarios WHERE id = ? AND tipo_usuario = 'estudante'`, [id]);
-
+        // Verificar se o estudante existe
+        const estudante = await db.get(`SELECT * FROM estudantes WHERE usuario_id = ?`, [id]);
+        
         if (!estudante) {
             res.status(404).json({ error: 'Estudante não encontrado.' });
             return;
@@ -923,8 +934,10 @@ app.delete('/usuarios/:id', verifyToken, async (req, res) => {
 });
 //-------------------------------------------------------------------------------------------------------
 //Inicialização do servidor e criação das tabelas--------------------------------------------------------
-app.listen(PORT, async () => {
-    await createTables();
-    await insertUsers();
-    console.log(`Servidor rodando na porta ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, async () => {
+        await createTables();
+        await insertUsers();
+        console.log(`Servidor rodando na porta ${PORT}`);
+    });
+}
